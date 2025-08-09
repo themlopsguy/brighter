@@ -1,29 +1,37 @@
 // app/onboarding.tsx
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
   SafeAreaView, 
-  TouchableOpacity,
   Platform,
-  StatusBar,
   Animated,
   Easing,
-  useWindowDimensions
+  useWindowDimensions,
+  ScrollView
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { PrepTalkTheme } from '@/constants/Theme';
 import { useAuth } from '@/services/AuthContext';
-import OnboardingJobCard from '@/components/OnboardingJobCard';
+import { LinearGradient } from 'expo-linear-gradient';
+import OnboardingStep1 from '@/components/onboarding/OnboardingStep1';
+import OnboardingStep2 from '@/components/onboarding/OnboardingStep2';
+import OnboardingStep3 from '@/components/onboarding/OnboardingStep3';
+import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
+import OnboardingFooter from '@/components/onboarding/OnboardingFooter';
 
 export default function OnboardingScreen() {
   const { currentUser, signOut } = useAuth();
   const rotationAnim = useRef(new Animated.Value(0)).current;
-  const { height } = useWindowDimensions();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollAnimValue = useRef(new Animated.Value(0)).current;
+  const { height, width } = useWindowDimensions();
+  const [isStep1Active, setIsStep1Active] = useState(true);
+  const [isStep2Active, setIsStep2Active] = useState(false);
+  const [isStep2Complete, setIsStep2Complete] = useState(false);
 
   // Sample job data for the orbiting cards
   const jobData = [
@@ -39,40 +47,89 @@ export default function OnboardingScreen() {
     { position: 'Team Lead', company: 'Arrow Finishing, Inc', logo: require('@/assets/images/arrow.png')},
   ];
 
-  useEffect(() => {
-    // Create the continuous rotation animation
-    const startRotation = () => {
-      rotationAnim.setValue(0);
-      Animated.timing(rotationAnim, {
-        toValue: 1,
-        duration: height < 700 ? 80000 : 70000, // 15 seconds per rotation
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }).start(() => {
-        // Loop the animation
-        startRotation();
-      });
-    };
+  const logoImages = [
+    { source: require('@/assets/images/onboarding/logos/airbnb.png'), width: 80, height: 95 },
+    { source: require('@/assets/images/onboarding/logos/luxe.png'), width: 60, height: 75 },
+    { source: require('@/assets/images/onboarding/logos/meta.png'), width: 40, height: 40 },
+    { source: require('@/assets/images/onboarding/logos/microsoft.png'), width: 35, height: 35 },
+    { source: require('@/assets/images/onboarding/logos/morgan.png'), width: 80, height: 85 },
+    { source: require('@/assets/images/onboarding/logos/spacex.png'), width: 80, height: 95 },
+    { source: require('@/assets/images/onboarding/logos/universal.png'), width: 80, height: 95 },
+  ];
 
-    startRotation();
-  }, [rotationAnim]);
+// Step configuration data
+const stepData = [
+  {
+    // Step 1 - Current job cards step
+    titleImage: require('@/assets/images/onboarding/onboard-1-footer.png'),
+    buttonText: "Continue"
+  },
+  {
+    // Step 2 - Future step
+    titleImage: require('@/assets/images/onboarding/onboard-2-footer.png'),
+    buttonText: "Continue"
+  },
+  {
+    // Step 3 - Future step  
+    title: "Ready to start?",
+    titleHighlight: "Ready",
+    subtitle1: "Join thousands of professionals",
+    subtitle1Highlight: "thousands",
+    subtitle2: "Finding their dream jobs",
+    subtitle2Highlight: "dream jobs",
+    subtitle3: "Let's get started",
+    buttonText: "Get Started"
+  }
+];
 
-  // Interpolate rotation value to degrees
-  const rotateInterpolate = rotationAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+// State management for onboarding steps
+const [currentStep, setCurrentStep] = useState(0);
+const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
 
-  // Counter-rotation to keep cards upright
-  const counterRotateInterpolate = rotationAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '-360deg'],
-  });
+// Navigation functions
+const nextStep = () => {
+  if (currentStep < stepData.length - 1) {
+    const newStep = currentStep + 1;
+    setCurrentStep(newStep);
+    setDirection('forward');
 
-  const handleGetStarted = () => {
-    // TODO: Navigate to actual onboarding flow
+    setIsStep1Active(newStep === 0);
+    setIsStep2Active(newStep === 1);
+
+    scrollViewRef.current?.scrollTo({
+      x: newStep * width,
+      animated: true
+    });
+  } else {
+    // Last step - navigate to main app
     router.push('/(tabs)');
-  };
+  }
+};
+
+const handleScroll = (event) => {
+  const scrollX = event.nativeEvent.contentOffset.x;
+  scrollAnimValue.setValue(scrollX);
+};
+
+const previousStep = () => {
+  if (currentStep > 0) {
+    const newStep = currentStep - 1;
+    setCurrentStep(newStep);
+    setDirection('backward');
+
+    // Update active states
+    setIsStep1Active(newStep === 0);
+    setIsStep2Active(newStep === 1);
+
+    scrollViewRef.current?.scrollTo({
+      x: newStep * width,
+      animated: true
+    });
+  } else {
+    // First step - sign out
+    handleBackPress();
+  }
+};
 
   const handleBackPress = async () => {
     try {
@@ -84,99 +141,79 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ExpoStatusBar style="dark" />
-      {/* Back Arrow */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={handleBackPress}
-          activeOpacity={0.7}
-        >
-          <Ionicons 
-            name="arrow-back" 
-            size={24} 
-            color={PrepTalkTheme.colors.text} 
-          />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: '#FFFFFF' }]}>
+  <ExpoStatusBar style="dark" />
+        <LinearGradient
+      colors={PrepTalkTheme.colors.gradientBackground.colors}
+      start={PrepTalkTheme.colors.gradientBackground.start}
+      end={PrepTalkTheme.colors.gradientBackground.end}
+      locations={PrepTalkTheme.colors.gradientBackground.locations}
+      style={[StyleSheet.absoluteFill]}
+    >
+      {/* Header Component */}
+      <OnboardingHeader 
+        currentStep={currentStep}
+        onBackPress={previousStep}
+      />
 
       <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.headerSection}>
-          <Text style={styles.title}>Welcome to Brighter!</Text>
-          <Text style={styles.subtitle}>
-            {currentUser?.email ? `Hi ${currentUser.email}!` : 'You\'re signed in'}
-          </Text>
-          <Text style={styles.description}>
-            Let's get you set up for success in your career journey.
-          </Text>
-        </View>
 
-        {/* Main Content */}
-        <View style={styles.mainSection}>
-          <View style={styles.orbitContainer}>
-            {/* Gray circle border */}
-            <View style={[styles.circleBorder, {transform: [{ translateY: height < 700 ? 150 : 50 }]}]} />
+{/* Main Content Swiper */}
+        <View style={[styles.mainSection, {marginTop: height < 700 ? -80 : -150},
+                                          {flex: height < 700 ? 0.82 : 0.77}
+        ]}>
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          scrollEnabled={currentStep !== 1 || isStep2Complete} // ← ADD this line
+          style={styles.scrollViewStyle}
+          contentContainerStyle={styles.scrollContainer}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={(event) => {
+            const newStep = Math.round(event.nativeEvent.contentOffset.x / width);
+            if (newStep !== currentStep) {
+              // Just call the existing step functions instead of manual updates
+              if (newStep > currentStep) {
+                nextStep(); // User swiped forward
+              } else {
+                previousStep(); // User swiped backward  
+              }
+            }
+          }} 
+        >
+            {/* Step 1 - Job Cards */}
+            <View style={[styles.stepContainer, {width: width, height: height, overflow: 'hidden'}]}>
+              <OnboardingStep1 jobData={jobData} logoImages={logoImages} isActive={isStep1Active} />
+            </View>
             
-            {/* Rotating container with job cards */}
-            <Animated.View 
-              style={[
-                styles.cardContainer,
-                {
-                  transform: [{ translateY: height < 700 ? 200 : 100 }, 
-                              { rotate: rotateInterpolate }],
-                }
-              ]}
-            >
-              {jobData.map((job, index) => {
-                // Calculate position using trigonometry for the larger circle
-                const angle = (index * 35) * (Math.PI / 180); // Convert to radians
-                const radius = 450; // Half of your 700px width circle
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius; // Add 50px offset to match your translateY
-                
-                return (
-                  <Animated.View
-                    key={index}
-                    style={[
-                      styles.cardPosition,
-                      {
-                        transform: [
-                          { translateX: x },
-                          { translateY: y },
-                          { rotate: counterRotateInterpolate }, // Only counter-rotate to stay upright
-                        ],
-                      },
-                    ]}
-                  >
-                    <OnboardingJobCard 
-                      position={job.position} 
-                      company={job.company}
-                      logo={job.logo}
-                      logoWidth={job.logoWidth}
-                      logoHeight={job.logoHeight}
-                    />
-                  </Animated.View>
-                );
-              })}
-            </Animated.View>
-          </View>
+            {/* Step 2 - Placeholder */}
+            <View style={[styles.stepContainer, {width: width, height: height, overflow: 'hidden'}]}>
+              <OnboardingStep2 isActive={isStep2Active} onSwipeComplete={() => setIsStep2Complete(true)} />
+            </View>
+            
+            {/* Step 3 - Placeholder */}
+            <View style={[styles.stepContainer, {width: width, height: height, overflow: 'hidden'}]}>
+              <OnboardingStep3 isActive={currentStep === 2} />
+            </View>
+            </ScrollView>
         </View>
 
-        {/* Action Button */}
-        <View style={styles.footerSection}>
-          <TouchableOpacity 
-            style={styles.primaryButton}
-            onPress={handleGetStarted}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.primaryButtonText}>
-              Continue to App
-            </Text>
-          </TouchableOpacity>
+        {/* Footer Component */}
+        <View style = {styles.FooterWrapper}>
+        <OnboardingFooter 
+          currentStep={currentStep}
+          stepData={stepData}
+          onContinue={nextStep}
+          scrollAnimValue={scrollAnimValue}
+          screenWidth={width}
+          isDisabled={currentStep === 1 && !isStep2Complete}
+        />
         </View>
       </View>
+    </LinearGradient>
     </SafeAreaView>
   );
 }
@@ -184,87 +221,29 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: PrepTalkTheme.colors.background,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
+    //backgroundColor: PrepTalkTheme.colors.background,
+    //paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
   },
   header: {
-    paddingHorizontal: PrepTalkTheme.metrics.padding,
-    paddingTop: Platform.OS === 'android' ? 20 : 10,
-    paddingBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 8, // Just padding for touch area
+  },
+  spacer: {
+    width: 44, // Same width as back button area for balance
   },
   content: {
     flex: 1,
-    paddingHorizontal: PrepTalkTheme.metrics.padding,
-    paddingVertical: Platform.OS === 'android' ? 10 : 20,
-  },
-  headerSection: {
-    flex: 0.4,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    ...PrepTalkTheme.typography.title,
-    color: PrepTalkTheme.colors.text,
-    fontFamily: 'Lexend-Bold',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  subtitle: {
-    ...PrepTalkTheme.typography.headline,
-    color: PrepTalkTheme.colors.primary,
-    fontFamily: 'Lexend-Medium',
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  description: {
-    ...PrepTalkTheme.typography.body,
-    color: PrepTalkTheme.colors.mediumGray,
-    fontFamily: 'Nunito-Regular',
-    textAlign: 'center',
-    lineHeight: 24,
+    //paddingHorizontal: PrepTalkTheme.metrics.padding,
+    //paddingVertical: Platform.OS === 'android' ? 10 : 20,
   },
   mainSection: {
-    flex: 0.4,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  orbitContainer: {
-    width: 700,
-    height: 800,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-circleBorder: {
-    width: 700,
-    height: 800,
-    borderRadius: 420,
-    borderWidth: 2,
-    borderColor: 'rgb(255, 255, 255)',
-    //opacity: 0.3,
-    position: 'absolute',
-    transform: [{ translateY: 50 }]
-  },
-  cardContainer: {
-    width: 700,
-    height: 800,
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardPosition: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+  flex: 0.7,
+  justifyContent: 'center',
+  alignItems: 'center',
   },
   placeholderText: {
     ...PrepTalkTheme.typography.midHeadline,
@@ -280,21 +259,24 @@ circleBorder: {
     textAlign: 'center',
     lineHeight: 22,
   },
-  footerSection: {
-    flex: 0.2,
-    justifyContent: 'flex-end',
-    paddingBottom: Platform.OS === 'android' ? 30 : 20,
-  },
-  primaryButton: {
-    backgroundColor: PrepTalkTheme.colors.primary,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 25,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    ...PrepTalkTheme.typography.headline,
-    color: '#FFFFFF',
-    fontFamily: 'Lexend-Medium',
-  },
+scrollViewStyle: {
+  flex: 1,
+  width: '100%',
+},
+scrollContainer: {
+  flexDirection: 'row', // This is important for horizontal scrolling
+  alignItems: 'stretch',
+},
+stepContainer: {
+  // width: '100%', // Use fixed width instead of 100% - adjust this value as needed
+  // height: '100%',
+},
+placeholderStep: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+FooterWrapper: {
+  //bottom: 15
+}
 });

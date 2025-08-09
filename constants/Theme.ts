@@ -1,4 +1,5 @@
 import { Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -10,6 +11,20 @@ export const PrepTalkTheme = {
     accent: '#EB5160',      // Indian Red - accent color for contrast
     background: '#FDFAED',  // Floral White - light background (replaces white)
     text: '#2D3142',        // Gunmetal - dark text color (replaces black)
+
+    gradientBackground: {
+      colors: [
+        '#F2BD2C44', // Top-left   
+        '#EBCA4744', // Middle
+        '#EB516044',
+        '#FDFAED44', // Bottom-right
+        
+      ],
+      opacity: 0.1,
+      start: { x: 0, y: 0 },     // Top-left corner
+      end: { x: 1, y: 1 },       // Bottom-right corner
+      locations: [0, 0.05, 0.4, 0.8],    // Color distribution (subtle transitions)
+    },
 
     // Semantic color mappings for easy reference
     light: '#FDFAED',       // Floral White - for elements that need light color
