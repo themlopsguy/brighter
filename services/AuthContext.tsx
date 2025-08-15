@@ -385,7 +385,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (profile.onboarding_completed) {
             router.push('/(tabs)');
             } else {
-            router.push('/onboarding');
+            router.push('/intro');
             }
         }, 100);
         

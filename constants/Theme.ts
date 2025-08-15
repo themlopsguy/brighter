@@ -1,7 +1,151 @@
 import { Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useWindowDimensions } from 'react-native';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+// Universal screen size breakpoints (based on iOS standards)
+export const SCREEN_BREAKPOINTS = {
+  small: { maxHeight: 800, maxWidth: 400 },   // iPhone SE, iPhone 12 mini
+  medium: { maxHeight: 900, maxWidth: 430 },  // iPhone 12, iPhone 13, iPhone 14
+  large: { maxHeight: 1000, maxWidth: 450 },  // iPhone 14 Pro, iPhone 15, iPhone 16
+  xlarge: { maxHeight: Infinity, maxWidth: Infinity }, // iPhone Pro Max, Plus models
+};
+
+// Screen size types
+export type ScreenSize = 'small' | 'medium' | 'large' | 'xlarge';
+
+// Hook to get current screen size
+export const useScreenSize = (): ScreenSize => {
+  const { height, width } = useWindowDimensions();
+  
+  //console.log(`Height: ${height}, Width: ${width}`); // Debug log
+  
+  if (height <= SCREEN_BREAKPOINTS.small.maxHeight && width <= SCREEN_BREAKPOINTS.small.maxWidth) {
+    return 'small';
+  } else if (height <= SCREEN_BREAKPOINTS.medium.maxHeight && width <= SCREEN_BREAKPOINTS.medium.maxWidth) {
+    return 'medium';
+  } else if (height <= SCREEN_BREAKPOINTS.large.maxHeight && width <= SCREEN_BREAKPOINTS.large.maxWidth) {
+    return 'large';
+  } else {
+    return 'xlarge';
+  }
+};
+
+// Helper function to get values based on screen size
+export const getResponsiveValue = <T>(values: {
+  small: T;
+  medium?: T;
+  large?: T;
+  xlarge?: T;
+}): T => {
+  const screenSize = useScreenSize();
+  
+  // Fallback logic: if specific size not provided, use the closest smaller one
+  switch (screenSize) {
+    case 'small':
+      return values.small;
+    case 'medium':
+      return values.medium ?? values.small;
+    case 'large':
+      return values.large ?? values.medium ?? values.small;
+    case 'xlarge':
+      return values.xlarge ?? values.large ?? values.medium ?? values.small;
+    default:
+      return values.small;
+  }
+};
+
+// Pre-defined responsive values for common use cases
+export const RESPONSIVE_VALUES = {
+  // Font sizes
+  fontSize: {
+    title: {
+      small: 22,
+      medium: 26,
+      large: 28,
+      xlarge: 32,
+    },
+    subtitle: {
+      small: 12,
+      medium: 14,
+      large: 16,
+      xlarge: 18,
+    },
+    body: {
+      small: 14,
+      medium: 16,
+      large: 18,
+      xlarge: 20,
+    },
+    button: {
+      small: 16,
+      medium: 18,
+      large: 20,
+      xlarge: 22,
+    },
+  },
+  
+  // Padding and margins
+  spacing: {
+    small: {
+      small: 12,
+      medium: 16,
+      large: 20,
+      xlarge: 24,
+    },
+    medium: {
+      small: 20,
+      medium: 24,
+      large: 28,
+      xlarge: 32,
+    },
+    large: {
+      small: 32,
+      medium: 40,
+      large: 48,
+      xlarge: 56,
+    },
+  },
+  
+  // Header padding
+  headerPadding: {
+    small: 40,
+    medium: 50,
+    large: 60,
+    xlarge: 70,
+  },
+};
+
+// Debug helper to see current device categorization
+export const useDeviceInfo = () => {
+  const { height, width } = useWindowDimensions();
+  const screenSize = useScreenSize();
+  
+  return {
+    screenSize,
+    dimensions: { height, width },
+    deviceType: (() => {
+      if (height <= 800) return 'Small Device (SE/Mini)';
+      if (height <= 900) return 'Standard Device (12/13/14)';
+      if (height <= 1000) return 'Pro Device (15/16)';
+      return 'Pro Max/Plus Device';
+    })(),
+  };
+};
+
+// Convenience hooks
+export const useResponsiveFontSize = (type: keyof typeof RESPONSIVE_VALUES.fontSize) => {
+  return getResponsiveValue(RESPONSIVE_VALUES.fontSize[type]);
+};
+
+export const useResponsiveSpacing = (size: keyof typeof RESPONSIVE_VALUES.spacing) => {
+  return getResponsiveValue(RESPONSIVE_VALUES.spacing[size]);
+};
+
+export const useResponsiveHeaderPadding = () => {
+  return getResponsiveValue(RESPONSIVE_VALUES.headerPadding);
+};
 
 export const PrepTalkTheme = {
   // Colors
@@ -123,6 +267,13 @@ export const PrepTalkTheme = {
   screen: {
     width: screenWidth,
     height: screenHeight,
+    breakpoints: SCREEN_BREAKPOINTS,
+    useScreenSize,
+    getResponsiveValue,
+    useResponsiveFontSize,
+    useResponsiveSpacing,
+    useResponsiveHeaderPadding,
+    useDeviceInfo,
   },
 
   // Gradients

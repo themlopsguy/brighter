@@ -1,4 +1,4 @@
-// app/onboarding.tsx
+// app/intro.tsx
 
 import React, { useEffect, useRef, useState } from 'react';
 import { 
@@ -17,13 +17,14 @@ import { router } from 'expo-router';
 import { PrepTalkTheme } from '@/constants/Theme';
 import { useAuth } from '@/services/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
-import OnboardingStep1 from '@/components/onboarding/OnboardingStep1';
-import OnboardingStep2 from '@/components/onboarding/OnboardingStep2';
-import OnboardingStep3 from '@/components/onboarding/OnboardingStep3';
-import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
-import OnboardingFooter from '@/components/onboarding/OnboardingFooter';
+import IntroStep1 from '@/components/intro/IntroStep1';
+import IntroStep2 from '@/components/intro/IntroStep2';
+import IntroStep3 from '@/components/intro/IntroStep3';
+import IntroHeader from '@/components/intro/IntroHeader';
+import IntroFooter from '@/components/intro/IntroFooter';
 
-export default function OnboardingScreen() {
+
+export default function IntroScreen() {
   const { currentUser, signOut } = useAuth();
   const rotationAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<ScrollView>(null);
@@ -48,41 +49,35 @@ export default function OnboardingScreen() {
   ];
 
   const logoImages = [
-    { source: require('@/assets/images/onboarding/logos/airbnb.png'), width: 80, height: 95 },
-    { source: require('@/assets/images/onboarding/logos/luxe.png'), width: 60, height: 75 },
-    { source: require('@/assets/images/onboarding/logos/meta.png'), width: 40, height: 40 },
-    { source: require('@/assets/images/onboarding/logos/microsoft.png'), width: 35, height: 35 },
-    { source: require('@/assets/images/onboarding/logos/morgan.png'), width: 80, height: 85 },
-    { source: require('@/assets/images/onboarding/logos/spacex.png'), width: 80, height: 95 },
-    { source: require('@/assets/images/onboarding/logos/universal.png'), width: 80, height: 95 },
+    { source: require('@/assets/images/intro/logos/airbnb.png'), width: 80, height: 95 },
+    { source: require('@/assets/images/intro/logos/luxe.png'), width: 60, height: 75 },
+    { source: require('@/assets/images/intro/logos/meta.png'), width: 40, height: 40 },
+    { source: require('@/assets/images/intro/logos/microsoft.png'), width: 35, height: 35 },
+    { source: require('@/assets/images/intro/logos/morgan.png'), width: 80, height: 85 },
+    { source: require('@/assets/images/intro/logos/spacex.png'), width: 80, height: 95 },
+    { source: require('@/assets/images/intro/logos/universal.png'), width: 80, height: 95 },
   ];
 
 // Step configuration data
 const stepData = [
   {
     // Step 1 - Current job cards step
-    titleImage: require('@/assets/images/onboarding/onboard-1-footer.png'),
+    titleImage: require('@/assets/images/intro/intro-1-footer.png'),
     buttonText: "Continue"
   },
   {
     // Step 2 - Future step
-    titleImage: require('@/assets/images/onboarding/onboard-2-footer.png'),
+    titleImage: require('@/assets/images/intro/intro-2-footer.png'),
     buttonText: "Continue"
   },
   {
     // Step 3 - Future step  
-    title: "Ready to start?",
-    titleHighlight: "Ready",
-    subtitle1: "Join thousands of professionals",
-    subtitle1Highlight: "thousands",
-    subtitle2: "Finding their dream jobs",
-    subtitle2Highlight: "dream jobs",
-    subtitle3: "Let's get started",
+    titleImage: require('@/assets/images/intro/intro-3-footer.png'),
     buttonText: "Get Started"
   }
 ];
 
-// State management for onboarding steps
+// State management for intro steps
 const [currentStep, setCurrentStep] = useState(0);
 const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
 
@@ -102,7 +97,7 @@ const nextStep = () => {
     });
   } else {
     // Last step - navigate to main app
-    router.push('/(tabs)');
+    router.push('/onboarding/firstName');
   }
 };
 
@@ -151,7 +146,7 @@ const previousStep = () => {
       style={[StyleSheet.absoluteFill]}
     >
       {/* Header Component */}
-      <OnboardingHeader 
+      <IntroHeader 
         currentStep={currentStep}
         onBackPress={previousStep}
       />
@@ -186,24 +181,24 @@ const previousStep = () => {
         >
             {/* Step 1 - Job Cards */}
             <View style={[styles.stepContainer, {width: width, height: height, overflow: 'hidden'}]}>
-              <OnboardingStep1 jobData={jobData} logoImages={logoImages} isActive={isStep1Active} />
+              <IntroStep1 jobData={jobData} logoImages={logoImages} isActive={isStep1Active} />
             </View>
             
             {/* Step 2 - Placeholder */}
             <View style={[styles.stepContainer, {width: width, height: height, overflow: 'hidden'}]}>
-              <OnboardingStep2 isActive={isStep2Active} onSwipeComplete={() => setIsStep2Complete(true)} />
+              <IntroStep2 isActive={isStep2Active} onSwipeComplete={() => setIsStep2Complete(true)} />
             </View>
             
             {/* Step 3 - Placeholder */}
             <View style={[styles.stepContainer, {width: width, height: height, overflow: 'hidden'}]}>
-              <OnboardingStep3 isActive={currentStep === 2} />
+              <IntroStep3 isActive={currentStep === 2} />
             </View>
             </ScrollView>
         </View>
 
         {/* Footer Component */}
         <View style = {styles.FooterWrapper}>
-        <OnboardingFooter 
+        <IntroFooter 
           currentStep={currentStep}
           stepData={stepData}
           onContinue={nextStep}

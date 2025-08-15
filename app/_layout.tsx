@@ -48,6 +48,7 @@ export default function RootLayout() {
       <Stack>
         {/* Welcome screen - the initial route when app opens */}
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="intro" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         
         {/* Auth modal - slides up from bottom */}

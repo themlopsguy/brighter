@@ -1,10 +1,10 @@
-// components/OnboardingJobCard.tsx
+// components/IntroJobCard.tsx
 
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, Image, ImageSourcePropType } from 'react-native';
 import { PrepTalkTheme } from '@/constants/Theme';
 
-interface OnboardingJobCardProps {
+interface IntroJobCardProps {
   position: string;
   company: string;
   logo?: ImageSourcePropType;
@@ -12,7 +12,7 @@ interface OnboardingJobCardProps {
   logoHeight?: number; // Optional logo height
 }
 
-export default function OnboardingJobCard({ position, company, logo, logoWidth, logoHeight }: OnboardingJobCardProps) {
+export default function IntroJobCard({ position, company, logo, logoWidth, logoHeight }: IntroJobCardProps) {
   const { height } = useWindowDimensions();
 
 

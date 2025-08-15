@@ -1,56 +1,188 @@
 // components/onboarding/OnboardingHeader.tsx
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import Rive, { AutoBind, RiveRef, useRive, useRiveNumber, DataBindBy, RNRiveError, RNRiveErrorType } from 'rive-react-native';
 import { 
   View, 
   Text, 
   StyleSheet, 
   TouchableOpacity,
-  Platform,
-  useWindowDimensions
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { PrepTalkTheme } from '@/constants/Theme';
-
-interface StepData {
-  title: string;
-  titleHighlight: string;
-  subtitle1: string;
-  subtitle1Highlight: string;
-  subtitle2: string;
-  subtitle2Highlight: string;
-  subtitle3: string;
-  buttonText: string;
-}
+import { 
+  PrepTalkTheme, 
+  useResponsiveFontSize, 
+  useResponsiveSpacing, 
+  useResponsiveHeaderPadding,
+  getResponsiveValue 
+} from '@/constants/Theme';
 
 interface OnboardingHeaderProps {
   currentStep: number;
+  totalSteps?: number;
   onBackPress: () => void;
 }
 
-export default function OnboardingHeader({ currentStep, onBackPress }: OnboardingHeaderProps) {
-  const { height } = useWindowDimensions();
+export const BindByName = (value: string): DataBindBy => ({
+  type: 'name',
+  value,
+});
+
+export default function OnboardingHeader({ currentStep, totalSteps = 4, onBackPress }: OnboardingHeaderProps) {
+  const { width } = useWindowDimensions();
+  const [setRiveRef, riveRef] = useRive();
+  let [progress, setProgress] = useRiveNumber(riveRef, 'progress');
+
+  // Use responsive utilities
+  const headerPadding = useResponsiveHeaderPadding();
+
+  // Custom responsive values for this specific component
+  const responsiveValues = {
+    titleFontSize: getResponsiveValue({
+      small: 18,
+      medium: 20,
+      large: 22,
+      xlarge: 24
+    }),
+    backButtonIconSize: getResponsiveValue({
+      small: 24,
+      medium: 26,
+      large: 28,
+      xlarge: 32
+    }),
+    backButtonPadding: getResponsiveValue({
+      small: 6,
+      medium: 7,
+      large: 8,
+      xlarge: 9
+    }),
+    progressContainerSize: getResponsiveValue({
+      small: 35,
+      medium: 40,
+      large: 45,
+      xlarge: 50
+    }),
+    riveAnimationSize: getResponsiveValue({
+      small: 50,
+      medium: 65,
+      large: 70,
+      xlarge: 75
+    }),
+    progressMarginRight: getResponsiveValue({
+      small: 0,
+      medium: 0,
+      large: 0,
+      xlarge: 0
+    }),
+    headerPaddingBottom: getResponsiveValue({
+      small: 0,
+      medium: 2,
+      large: 4,
+      xlarge: 5
+    }),
+    extraTopPadding: getResponsiveValue({
+      small: 10,
+      medium: 15,
+      large: 20,
+      xlarge: 25
+    }),
+    horizontalPaddingPercent: getResponsiveValue({
+      small: 0.06,
+      medium: 0.06,
+      large: 0.06,
+      xlarge: 0.06
+    })
+  };
+
+  // Calculate actual pixel value for horizontal padding
+  const horizontalPadding = width * responsiveValues.horizontalPaddingPercent;
+
+  // Calculate progress percentage
+  const progressValue = ((currentStep + 1) / totalSteps) * 100;
+  
+  // Check if we're on the first step
+  const isFirstStep = currentStep === 0;
+  
+  useEffect(() => {
+    if (riveRef && setProgress) {
+      console.log("Setting value...", progressValue);
+      riveRef.setNumber("progress", progressValue);
+      riveRef.play();
+    }
+  }, [currentStep, progressValue, riveRef, setProgress]);
 
   return (
-    <>
-      {/* Header with Back Button and Title */}
-      <View style={[styles.header, {
-        paddingTop: height < 700 ? 30 : 80,
-        paddingBottom: height < 700 ? 0 : 5
-         }]}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={onBackPress}
-          activeOpacity={0.7}
-        >
-          <Ionicons 
-            name="arrow-back" 
-            size={height < 700 ? 26 : 32} 
-            color={PrepTalkTheme.colors.text} 
-          />
-        </TouchableOpacity>
+    <View style={[
+      styles.header, 
+      {
+        paddingTop: headerPadding + responsiveValues.extraTopPadding,
+        paddingBottom: responsiveValues.headerPaddingBottom,
+        paddingHorizontal: horizontalPadding
+      }
+    ]}>
+      {/* Back Button - Conditional styling and functionality */}
+      <TouchableOpacity 
+        style={[
+          styles.backButton,
+          { padding: responsiveValues.backButtonPadding },
+          isFirstStep && styles.backButtonDisabled
+        ]}
+        onPress={isFirstStep ? undefined : onBackPress}
+        activeOpacity={isFirstStep ? 1 : 0.7}
+        disabled={isFirstStep}
+      >
+        <Ionicons 
+          name="arrow-back" 
+          size={responsiveValues.backButtonIconSize} 
+          color={isFirstStep ? PrepTalkTheme.colors.mediumGray : PrepTalkTheme.colors.text}
+          style={[
+            isFirstStep && styles.iconDisabled
+          ]}
+        />
+      </TouchableOpacity>
+      
+      <View style={styles.titleContainer}>
+        <Text style={[
+          styles.title, 
+          { fontSize: responsiveValues.titleFontSize }
+        ]}>
+          Profile Setup
+        </Text>
       </View>
-    </>
+      
+      {/* Rive Progress Ring */}
+      <View style={[
+        styles.progressContainer, 
+        { 
+          width: responsiveValues.progressContainerSize, 
+          height: responsiveValues.progressContainerSize,
+          marginRight: responsiveValues.progressMarginRight
+        }
+      ]}>
+        <Rive
+          ref={setRiveRef}
+          source={require('@/assets/animations/progress-ring-an.riv')}
+          style={{ 
+            width: responsiveValues.riveAnimationSize, 
+            height: responsiveValues.riveAnimationSize 
+          }}
+          autoplay={true}
+          dataBinding={AutoBind(true)}
+          onError={(riveError: RNRiveError) => {
+            switch (riveError.type) {
+              case RNRiveErrorType.DataBindingError: {
+                console.error(`${riveError.message}`);
+                return;
+              }
+              default:
+                console.error('Unhandled error');
+                return;
+            }
+          }}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -59,52 +191,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    zIndex: 1000, // Add this
+    zIndex: 1000,
     elevation: 1000,
   },
   backButton: {
-    padding: 8,
-    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  spacer: {
-    width: 44,
+  backButtonDisabled: {
+    opacity: 0.6, // Make the entire button area appear disabled
   },
   titleContainer: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center'
   },
   title: {
-    ...PrepTalkTheme.typography.title,
+    ...PrepTalkTheme.typography.headline,
     color: PrepTalkTheme.colors.text,
     fontFamily: 'Lexend-Bold',
     textAlign: 'center',
   },
-  titleHighlight: {
-    color: PrepTalkTheme.colors.primary,
-  },
-  headerSection: {
-    flex: 0.35,
-    justifyContent: 'flex-start',
+  progressContainer: {
     alignItems: 'center',
+    justifyContent: 'center'
   },
-  subtitlesContainer: {
-    alignItems: 'center',
-    gap: 3,
-  },
-  subtitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  subtitle: {
-    ...PrepTalkTheme.typography.headline,
-    color: PrepTalkTheme.colors.text,
-    fontFamily: 'Lexend-Medium',
-    textAlign: 'center',
-  },
-  subtitleHighlight: {
-    color: PrepTalkTheme.colors.accent,
-    fontFamily: 'Lexend-SemiBold',
-  },
+  iconDisabled: {
+    opacity: 0.7, // Additional opacity reduction for the icon itself
+  }
 });

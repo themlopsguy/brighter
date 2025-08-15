@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		047544ABE94E756E82F90658 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5C3C8651FD12A918D82929DE /* PrivacyInfo.xcprivacy */; };
+		0F7ADF94941960C3E5D731DF /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B80D86A728A3783F689517 /* ExpoModulesProvider.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		31FEE25143C9E5A85BEFE48A /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D0173593EC97EE2038D7E6 /* ExpoModulesProvider.swift */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		4313FD3722C853C6AB09BEE8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 77A9322AA5CEFA3DF965959B /* PrivacyInfo.xcprivacy */; };
+		53145C57EB21E81D757559E5 /* libPods-brighter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9690D60E61E167B28315141A /* libPods-brighter.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		BB883DB9B124EAE5C8D2E56C /* libPods-brighter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5E1A8996214AD0A009A9C21 /* libPods-brighter.a */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,16 +20,16 @@
 		13B07F961A680F5B00A75B9A /* brighter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = brighter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = brighter/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = brighter/Info.plist; sourceTree = "<group>"; };
-		5C3C8651FD12A918D82929DE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = brighter/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		A7112050B7B59D0E430F26B5 /* Pods-brighter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brighter.release.xcconfig"; path = "Target Support Files/Pods-brighter/Pods-brighter.release.xcconfig"; sourceTree = "<group>"; };
+		17B80D86A728A3783F689517 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-brighter/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		77A9322AA5CEFA3DF965959B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = brighter/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8B28C014D831E41E5DA707AF /* Pods-brighter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brighter.release.xcconfig"; path = "Target Support Files/Pods-brighter/Pods-brighter.release.xcconfig"; sourceTree = "<group>"; };
+		9690D60E61E167B28315141A /* libPods-brighter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-brighter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5CBCE4E57F3EFC6ED47BC5E /* Pods-brighter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brighter.debug.xcconfig"; path = "Target Support Files/Pods-brighter/Pods-brighter.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = brighter/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B6D0173593EC97EE2038D7E6 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-brighter/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		CDDDD9C9BB5DD856A8CE73FA /* Pods-brighter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brighter.debug.xcconfig"; path = "Target Support Files/Pods-brighter/Pods-brighter.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = brighter/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* brighter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "brighter-Bridging-Header.h"; path = "brighter/brighter-Bridging-Header.h"; sourceTree = "<group>"; };
-		F5E1A8996214AD0A009A9C21 /* libPods-brighter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-brighter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB883DB9B124EAE5C8D2E56C /* libPods-brighter.a in Frameworks */,
+				53145C57EB21E81D757559E5 /* libPods-brighter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,7 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				5C3C8651FD12A918D82929DE /* PrivacyInfo.xcprivacy */,
+				77A9322AA5CEFA3DF965959B /* PrivacyInfo.xcprivacy */,
 			);
 			name = brighter;
 			sourceTree = "<group>";
@@ -62,16 +62,16 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				F5E1A8996214AD0A009A9C21 /* libPods-brighter.a */,
+				9690D60E61E167B28315141A /* libPods-brighter.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		60B0EA3945926DEEB9E5429C /* Pods */ = {
+		35B26037BBFDBC84B0539DA5 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				CDDDD9C9BB5DD856A8CE73FA /* Pods-brighter.debug.xcconfig */,
-				A7112050B7B59D0E430F26B5 /* Pods-brighter.release.xcconfig */,
+				A5CBCE4E57F3EFC6ED47BC5E /* Pods-brighter.debug.xcconfig */,
+				8B28C014D831E41E5DA707AF /* Pods-brighter.release.xcconfig */,
 			);
 			name = Pods;
 			path = Pods;
@@ -91,8 +91,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				60B0EA3945926DEEB9E5429C /* Pods */,
-				CB32B167B58207A88A336D06 /* ExpoModulesProviders */,
+				35B26037BBFDBC84B0539DA5 /* Pods */,
+				B8CF0EC27216569E9EF8918E /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -107,6 +107,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B8CF0EC27216569E9EF8918E /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				E4726062D5E1D9EB3A9F1EA2 /* brighter */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -116,18 +124,10 @@
 			path = brighter/Supporting;
 			sourceTree = "<group>";
 		};
-		CB32B167B58207A88A336D06 /* ExpoModulesProviders */ = {
+		E4726062D5E1D9EB3A9F1EA2 /* brighter */ = {
 			isa = PBXGroup;
 			children = (
-				F11900E488255395D9E984B8 /* brighter */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
-		F11900E488255395D9E984B8 /* brighter */ = {
-			isa = PBXGroup;
-			children = (
-				B6D0173593EC97EE2038D7E6 /* ExpoModulesProvider.swift */,
+				17B80D86A728A3783F689517 /* ExpoModulesProvider.swift */,
 			);
 			name = brighter;
 			sourceTree = "<group>";
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "brighter" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				633EED21F1106A2CC9036EFF /* [Expo] Configure project */,
+				1D8E227ED2F3645A8D0541E0 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				4CAC917B9EBE3ED48BE7C5DE /* [CP] Embed Pods Frameworks */,
+				5945E64456B24A29635E50BC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -166,7 +166,9 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = AQ5592YQQP;
 						LastSwiftMigration = 1250;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -196,7 +198,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				047544ABE94E756E82F90658 /* PrivacyInfo.xcprivacy in Resources */,
+				4313FD3722C853C6AB09BEE8 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,7 +242,26 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		4CAC917B9EBE3ED48BE7C5DE /* [CP] Embed Pods Frameworks */ = {
+		1D8E227ED2F3645A8D0541E0 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-brighter/expo-configure-project.sh\"\n";
+		};
+		5945E64456B24A29635E50BC /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -259,25 +280,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-brighter/Pods-brighter-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		633EED21F1106A2CC9036EFF /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-brighter/expo-configure-project.sh\"\n";
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -347,7 +349,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				31FEE25143C9E5A85BEFE48A /* ExpoModulesProvider.swift in Sources */,
+				0F7ADF94941960C3E5D731DF /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,12 +358,15 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CDDDD9C9BB5DD856A8CE73FA /* Pods-brighter.debug.xcconfig */;
+			baseConfigurationReference = A5CBCE4E57F3EFC6ED47BC5E /* Pods-brighter.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = brighter/brighter.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AQ5592YQQP;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -392,12 +397,15 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A7112050B7B59D0E430F26B5 /* Pods-brighter.release.xcconfig */;
+			baseConfigurationReference = 8B28C014D831E41E5DA707AF /* Pods-brighter.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = brighter/brighter.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AQ5592YQQP;
 				INFOPLIST_FILE = brighter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (

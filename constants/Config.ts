@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 const config = {
   supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || Constants.expoConfig?.extra?.supabaseUrl,
   supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || Constants.expoConfig?.extra?.supabaseAnonKey,
+  supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || Constants.expoConfig?.extra?.supabasePublishableKey,
   revenueCatApiKey: process.env.EXPO_PUBLIC_REVENUE_CAT_API_KEY || Constants.expoConfig?.extra?.revenueCatApiKey,
   mixpanelToken: process.env.EXPO_PUBLIC_MIXPANEL_TOKEN || Constants.expoConfig?.extra?.mixpanelToken,
 };
@@ -22,6 +23,10 @@ if (!config.supabaseUrl) {
 
 if (!config.supabaseAnonKey) {
   throw new Error('supabaseAnonKey is required. Check your .env file and ensure EXPO_PUBLIC_SUPABASE_ANON_KEY is set.');
+}
+
+if (!config.supabasePublishableKey) {
+  throw new Error('supabasePublishableKey is required. Check your .env file and ensure EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY is set.');
 }
 
 export default config;

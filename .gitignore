@@ -37,3 +37,25 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# ADD THESE LINES FOR SECURITY:
+# Environment files (ALL variants)
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+
+# Supabase local files
+supabase/.temp/
+supabase/logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db

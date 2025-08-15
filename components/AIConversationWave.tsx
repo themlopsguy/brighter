@@ -282,7 +282,7 @@ const AIConversationWave: React.FC<AIConversationWaveProps> = ({
       </Svg>
 
       {/* Central Line */}
-      <View style={{
+      {/* <View style={{
         width: width * 0.9,
         height: 3,
         backgroundColor: '#ffffff',
@@ -292,7 +292,7 @@ const AIConversationWave: React.FC<AIConversationWaveProps> = ({
         shadowOpacity: 0.6,
         shadowRadius: 12,
         elevation: 8,
-      }} />
+      }} /> */}
     </View>
   );
 };
