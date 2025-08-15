@@ -30,7 +30,7 @@ export default function OnboardingAge() {
   const smallSpacing = useResponsiveSpacing('small');
   const mediumSpacing = useResponsiveSpacing('medium');
 
-  // Custom responsive values for this specific component
+  // Custom responsive values for this component
   const responsiveValues = {
     subtitleWidth: getResponsiveValue({
       small: 250,
