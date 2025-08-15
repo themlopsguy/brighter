@@ -14,7 +14,12 @@ import {
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
-import { PrepTalkTheme } from '@/constants/Theme';
+import { 
+  PrepTalkTheme, 
+  useResponsiveFontSize, 
+  useResponsiveSpacing, 
+  getResponsiveValue 
+} from '@/constants/Theme';
 import { useAuth } from '@/services/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import IntroStep1 from '@/components/intro/IntroStep1';
@@ -33,6 +38,46 @@ export default function IntroScreen() {
   const [isStep1Active, setIsStep1Active] = useState(true);
   const [isStep2Active, setIsStep2Active] = useState(false);
   const [isStep2Complete, setIsStep2Complete] = useState(false);
+
+  // Use responsive utilities
+  const titleFontSize = useResponsiveFontSize('title');
+  const bodyFontSize = useResponsiveFontSize('body');
+  const smallSpacing = useResponsiveSpacing('small');
+  const mediumSpacing = useResponsiveSpacing('medium');
+
+  // Custom responsive values for this specific component
+  const responsiveValues = {
+    mainSectionMarginTop: getResponsiveValue({
+      small: -80,
+      medium: -120,
+      large: -120,
+      xlarge: -150
+    }),
+    mainSectionFlex: getResponsiveValue({
+      small: 0.85,
+      medium: 0.82,
+      large: 0.79,
+      xlarge: 0.77
+    }),
+    placeholderFontSize: getResponsiveValue({
+      small: 22,
+      medium: 24,
+      large: 26,
+      xlarge: 28
+    }),
+    subTextLineHeight: getResponsiveValue({
+      small: 20,
+      medium: 21,
+      large: 22,
+      xlarge: 24
+    }),
+    subTextMarginBottom: getResponsiveValue({
+      small: 12,
+      medium: 14,
+      large: 16,
+      xlarge: 18
+    })
+  };
 
   // Sample job data for the orbiting cards
   const jobData = [
@@ -154,8 +199,12 @@ const previousStep = () => {
       <View style={styles.content}>
 
 {/* Main Content Swiper */}
-        <View style={[styles.mainSection, {marginTop: height < 700 ? -80 : -150},
-                                          {flex: height < 700 ? 0.82 : 0.77}
+        <View style={[
+          styles.mainSection, 
+          {
+            marginTop: responsiveValues.mainSectionMarginTop,
+            flex: responsiveValues.mainSectionFlex
+          }
         ]}>
         <ScrollView
           ref={scrollViewRef}

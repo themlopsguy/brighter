@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { PrepTalkTheme } from '@/constants/Theme';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
 import OnboardingFooter from '@/components/onboarding/OnboardingFooter';
+import { CountryWithAuth } from '@/components/CountrySelectionModal';
 
 // Context for sharing onboarding data across steps
 interface OnboardingData {
@@ -27,8 +28,14 @@ interface OnboardingData {
   race: string;
   veteranStatus: string;
   disabilityStatus: string;
-  age: string
-  birthday: string
+  age: string;
+  birthday: string;
+  countries: Array<{
+    country_name: string;
+    citizen: boolean;
+    requires_sponsorship: boolean;
+    work_authorization_status: boolean;
+  }>;
 }
 
 interface OnboardingContextType {
@@ -64,7 +71,8 @@ export default function OnboardingLayout() {
     'race': { step: 5, buttonText: 'Continue', dataKey: 'race' },
     'veteranStatus': { step: 6, buttonText: 'Continue', dataKey: 'veteranStatus' },
     'disabilityStatus': { step: 7, buttonText: 'Continue', dataKey: 'disabilityStatus' },
-    'age': { step: 8, buttonText: 'Get Started', dataKey: 'age' },
+    'age': { step: 8, buttonText: 'Continue', dataKey: 'age' },
+    'countries': { step: 9, buttonText: 'Get Started', dataKey: 'countries'}
   };
   
   const currentStepInfo = stepMap[currentSegment] || stepMap.firstName;
@@ -82,7 +90,11 @@ export default function OnboardingLayout() {
     veteranStatus: '',
     disabilityStatus: '',
     age: '',
-    birthday: ''
+    birthday: '',
+    countries: [{ country_name: 'United States',
+                  citizen: true,
+                  requires_sponsorship: false,
+                  work_authorization_status: true}]
   });
 
   const updateData = (field: keyof OnboardingData, value: string) => {
@@ -109,6 +121,8 @@ export default function OnboardingLayout() {
         return data.disabilityStatus.trim().length > 0;
       case 'age': 
         return data.age.trim().length > 0;
+      case 'countries': 
+        return data.countries && data.countries.length > 0;
       default: 
         return false;
     }
@@ -141,6 +155,9 @@ export default function OnboardingLayout() {
         router.push('/onboarding/age');
         break;
       case 'age':
+        router.push('/onboarding/countries');
+        break;
+      case 'countries':
         router.push('/(tabs)');
         break;
       default:
@@ -179,6 +196,9 @@ export default function OnboardingLayout() {
       case 'age':
         router.push('/onboarding/disabilityStatus');
         break;
+      case 'countries':
+        router.push('/onboarding/age');
+        break;
       default:
         router.back();
         break;
@@ -198,7 +218,7 @@ export default function OnboardingLayout() {
         >
           <OnboardingHeader 
             currentStep={currentStepInfo.step}
-            totalSteps={9}
+            totalSteps={10}
             onBackPress={handleBack}
           />
 

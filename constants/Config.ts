@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 const config = {
   supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || Constants.expoConfig?.extra?.supabaseUrl,
   supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || Constants.expoConfig?.extra?.supabaseAnonKey,
-  supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || Constants.expoConfig?.extra?.supabasePublishableKey,
+  supabasePublishableKey: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || Constants.expoConfig?.extra?.supabasePublishableKey,
   revenueCatApiKey: process.env.EXPO_PUBLIC_REVENUE_CAT_API_KEY || Constants.expoConfig?.extra?.revenueCatApiKey,
   mixpanelToken: process.env.EXPO_PUBLIC_MIXPANEL_TOKEN || Constants.expoConfig?.extra?.mixpanelToken,
 };
@@ -14,6 +14,8 @@ const config = {
 console.log('DEBUG Config:', {
   supabaseUrl: config.supabaseUrl ? 'SET' : 'NOT SET',
   supabaseAnonKey: config.supabaseAnonKey ? 'SET' : 'NOT SET',
+  supabasePublishableKey: config.supabasePublishableKey ? 'SET' : 'NOT SET',
+  
 });
 
 // Validate required config
