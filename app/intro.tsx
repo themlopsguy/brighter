@@ -27,6 +27,7 @@ import IntroStep2 from '@/components/intro/IntroStep2';
 import IntroStep3 from '@/components/intro/IntroStep3';
 import IntroHeader from '@/components/intro/IntroHeader';
 import IntroFooter from '@/components/intro/IntroFooter';
+import OverlayCard from '@/components/intro/OverlayCard';
 
 
 export default function IntroScreen() {
@@ -38,6 +39,8 @@ export default function IntroScreen() {
   const [isStep1Active, setIsStep1Active] = useState(true);
   const [isStep2Active, setIsStep2Active] = useState(false);
   const [isStep2Complete, setIsStep2Complete] = useState(false);
+  const [showStep2Overlay, setShowStep2Overlay] = useState(false);
+  const { updateUserProfile } = useAuth();
 
   // Use responsive utilities
   const titleFontSize = useResponsiveFontSize('title');
@@ -126,6 +129,7 @@ const stepData = [
 const [currentStep, setCurrentStep] = useState(0);
 const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
 
+
 // Navigation functions
 const nextStep = () => {
   if (currentStep < stepData.length - 1) {
@@ -142,8 +146,14 @@ const nextStep = () => {
     });
   } else {
     // Last step - navigate to main app
+    updateUserProfile({ intro_completed: true })
     router.push('/onboarding/firstName');
   }
+};
+
+const handleStep2SwipeComplete = () => {
+  setShowStep2Overlay(true);
+  setIsStep2Complete(true);
 };
 
 const handleScroll = (event) => {
@@ -235,7 +245,7 @@ const previousStep = () => {
             
             {/* Step 2 - Placeholder */}
             <View style={[styles.stepContainer, {width: width, height: height, overflow: 'hidden'}]}>
-              <IntroStep2 isActive={isStep2Active} onSwipeComplete={() => setIsStep2Complete(true)} />
+              <IntroStep2 isActive={isStep2Active} onSwipeComplete={handleStep2SwipeComplete} />
             </View>
             
             {/* Step 3 - Placeholder */}
@@ -258,6 +268,10 @@ const previousStep = () => {
         </View>
       </View>
     </LinearGradient>
+    <OverlayCard
+      visible={showStep2Overlay}
+      onDismiss={() => setShowStep2Overlay(false)}
+    />
     </SafeAreaView>
   );
 }

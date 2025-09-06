@@ -16,11 +16,11 @@ import {
   useResponsiveHeaderPadding,
   getResponsiveValue 
 } from '@/constants/Theme';
-import { useOnboardingData } from './_layout';
+import { useAuth } from '@/services/AuthContext';
 import CountryCodeModal, { CountryCode, findCountryByCode } from '@/components/CountryCodeModal';
 
 export default function OnboardingPhoneNumber() {
-  const { data, updateData } = useOnboardingData();
+  const { userProfile, updateUserProfile } = useAuth();
   const { width } = useWindowDimensions();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const textInputRef = useRef<TextInput>(null);
@@ -71,7 +71,7 @@ export default function OnboardingPhoneNumber() {
   const handlePhoneNumberChange = (text: string) => {
     // Format phone number for US numbers
     let formattedText = text;
-    if (data.countryCode === '+1') {
+    if ((userProfile?.country_code || '+1') === '+1') {
       // Remove all non-digits
       const digits = text.replace(/\D/g, '');
       
@@ -85,13 +85,14 @@ export default function OnboardingPhoneNumber() {
       }
     }
     
-    updateData('phoneNumber', formattedText);
+    updateUserProfile({ phone_number: formattedText });
   };
 
   const handleCountryCodeSelect = (countryCode: CountryCode) => {
-    updateData('countryCode', countryCode.code);
-    // Store the selected country name as well to distinguish between countries with same code
-    updateData('selectedCountry', countryCode.country);
+    updateUserProfile({ 
+      country_code: countryCode.code,
+      phone_country: countryCode.country 
+    });
     setIsModalVisible(false);
     
     // Re-focus the text input after modal closes
@@ -100,15 +101,18 @@ export default function OnboardingPhoneNumber() {
     }, 100);
   };
 
-  const getSelectedCountry = (): CountryCode => {
-    return findCountryByCode(data.countryCode, data.selectedCountry);
-  };
+const getSelectedCountry = (): CountryCode => {
+  return findCountryByCode(
+    userProfile?.country_code || '+1', 
+    userProfile?.phone_country
+  );
+};
 
   // Phone number validation
   const isValidPhoneNumber = (phone: string): boolean => {
     const digits = phone.replace(/\D/g, '');
     
-    if (data.countryCode === '+1') {
+    if (userProfile?.country_code === '+1') {
       return digits.length === 10;
     }
     
@@ -160,7 +164,7 @@ export default function OnboardingPhoneNumber() {
                 styles.countryCodeButtonText, 
                 { fontSize: responsiveValues.inputFontSize }
               ]}>
-                {data.countryCode}
+                {userProfile?.country_code || '+1'}
               </Text>
             </TouchableOpacity>
             {/* Country Code Underline */}
@@ -184,20 +188,20 @@ export default function OnboardingPhoneNumber() {
                   paddingHorizontal: responsiveValues.phoneInputPadding
                 }
               ]}
-              value={data.phoneNumber}
+              value={userProfile?.phone_number || ''}
               onChangeText={handlePhoneNumberChange}
-              placeholder={data.countryCode === '+1' ? '5551234567' : 'Phone number'}
+              placeholder={(userProfile?.country_code || '+1') === '+1' ? '5551234567' : 'Phone number'}
               placeholderTextColor={PrepTalkTheme.colors.mediumGray}
               keyboardType="phone-pad"
               autoComplete="tel"
               textAlign="left"
-              maxLength={data.countryCode === '+1' ? 14 : 20}
+              maxLength={(userProfile?.country_code || '+1') === '+1' ? 14 : 20}
               autoFocus={true}
             />
             <View style={[
               styles.underline,
               { 
-                backgroundColor: isValidPhoneNumber(data.phoneNumber)
+                backgroundColor: isValidPhoneNumber(userProfile?.phone_number || '')
                   ? PrepTalkTheme.colors.primary 
                   : PrepTalkTheme.colors.mediumGray 
               }
@@ -211,7 +215,7 @@ export default function OnboardingPhoneNumber() {
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onSelectCountry={handleCountryCodeSelect}
-        selectedCountryCode={data.countryCode}
+        selectedCountryCode={userProfile?.country_code || '+1'}
       />
     </View>
   );

@@ -17,6 +17,7 @@ import {
   useResponsiveHeaderPadding,
   getResponsiveValue 
 } from '@/constants/Theme';
+import { Asset } from 'expo-asset';
 
 interface OnboardingHeaderProps {
   currentStep: number;
@@ -36,6 +37,8 @@ export default function OnboardingHeader({ currentStep, totalSteps = 4, onBackPr
 
   // Use responsive utilities
   const headerPadding = useResponsiveHeaderPadding();
+
+  const riveAsset = Asset.fromModule(require('@/assets/animations/progress-ring-an.riv'));
 
   // Custom responsive values for this specific component
   const responsiveValues = {
@@ -162,7 +165,7 @@ export default function OnboardingHeader({ currentStep, totalSteps = 4, onBackPr
       ]}>
         <Rive
           ref={setRiveRef}
-          source={require('@/assets/animations/progress-ring-an.riv')}
+          url={riveAsset.localUri || riveAsset.uri}
           style={{ 
             width: responsiveValues.riveAnimationSize, 
             height: responsiveValues.riveAnimationSize 

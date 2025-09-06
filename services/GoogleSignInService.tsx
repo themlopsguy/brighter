@@ -10,8 +10,9 @@ class GoogleSignInService {
     try {
       GoogleSignin.configure({
         iosClientId: '346171187215-vfgtbu835ma7httdf6fg8an83a8h46nr.apps.googleusercontent.com',
+        //androidClientId: '346171187215-3t64043lpsrhdgj7hhfr5rkasp8iia5p.apps.googleusercontent.com',
         offlineAccess: false,
-        scopes: ['profile', 'email'],
+        scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.readonly'],
       });
       console.log('DEBUG: Google Sign In configured');
     } catch (error) {

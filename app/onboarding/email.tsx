@@ -15,10 +15,10 @@ import {
   useResponsiveHeaderPadding,
   getResponsiveValue 
 } from '@/constants/Theme';
-import { useOnboardingData } from './_layout';
+import { useAuth } from '@/services/AuthContext';
 
 export default function OnboardingEmail() {
-  const { data, updateData } = useOnboardingData();
+  const { userProfile, updateUserProfile } = useAuth();
   const { width } = useWindowDimensions();
   
   // Use responsive utilities
@@ -36,16 +36,16 @@ export default function OnboardingEmail() {
       xlarge: 350
     }),
     inputFontSize: getResponsiveValue({
-      small: 18,
-      medium: 20,
-      large: 22,
-      xlarge: 24
+      small: 14,
+      medium: 16,
+      large: 18,
+      xlarge: 20
     }),
     inputPadding: getResponsiveValue({
-      small: 30,
+      small: 0,
       medium: 20,
-      large: 10,
-      xlarge: 10
+      large: 0,
+      xlarge: 0
     }),
     horizontalPaddingPercent: getResponsiveValue({
       small: 0.12,
@@ -59,7 +59,7 @@ export default function OnboardingEmail() {
   const horizontalPadding = width * responsiveValues.horizontalPaddingPercent;
 
   const handleEmailChange = (text: string) => {
-    updateData('email', text);
+    updateUserProfile({ email: text });
   };
 
   // Email validation function
@@ -110,7 +110,7 @@ export default function OnboardingEmail() {
                 paddingHorizontal: responsiveValues.inputPadding
               }
             ]}
-            value={data.email}
+            value={userProfile?.email || ''}
             onChangeText={handleEmailChange}
             placeholder="Enter your email"
             placeholderTextColor={PrepTalkTheme.colors.mediumGray}
@@ -124,7 +124,7 @@ export default function OnboardingEmail() {
           <View style={[
             styles.underline,
             { 
-              backgroundColor: isValidEmail(data.email)
+              backgroundColor: (userProfile?.email || '').trim().length > 0
                 ? PrepTalkTheme.colors.primary 
                 : PrepTalkTheme.colors.mediumGray 
             }

@@ -361,6 +361,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     };
 
+  const updateUserProfile = async (updates: Partial<UserProfile>) => {
+    if (state.userProfile && state.currentUser) {
+      // Update local state with all fields
+      const updatedProfile = { ...state.userProfile, ...updates };
+      setUserProfile(updatedProfile);
+      
+      // Define fields that exist in Supabase profiles table
+      const supabaseFields = new Set([
+        'first_name', 'middle_name', 'last_name', 'title', 'location', 
+        'applying_countries', 'date_of_birth', 'drivers_license_number', 
+        'email', 'phone_number', 'age', 'gender', 'race', 'veteran', 
+        'disability', 'linkedin', 'github', 'x_twitter', 'portfolio', 
+        'experiences', 'education', 'projects', 'interview_language', 
+        'prepscore', 'interview_count', 'successful_applications', 
+        'failed_applications', 'swipes_available', 'gift_available', 
+        'referral_code', 'partner_code', 'creator_code', 'skills', 
+        'exams', 'certifications', 'languages', 'awards', 'interests', 
+        'relevant_coursework', 'onboarding_completed', 'country_code', 
+        'phone_country', 'resume_url', 'intro_completed', 'title_requests'
+      ]);
+      
+      // Filter updates to only include Supabase fields
+      const supabaseUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([key]) => supabaseFields.has(key))
+      );
+      
+      // Only sync to Supabase if there are valid fields to update
+      if (Object.keys(supabaseUpdates).length > 0) {
+        try {
+          const { error } = await supabaseClient
+            .from('profiles')
+            .update(supabaseUpdates)
+            .eq('id', state.currentUser.id);
+          
+          if (error) {
+            console.error('Failed to update profile in Supabase:', error);
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+        }
+      }
+    }
+  };
+
     const syncUserProfile = async (userId: string): Promise<UserProfile | null> => {
     try {
         console.log('DEBUG: Syncing user profile for:', userId);
@@ -382,11 +426,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         // Navigate based on onboarding status (only once per sync)
         setTimeout(() => {
-            if (profile.onboarding_completed) {
-            router.push('/(tabs)');
-            } else {
+          if (profile.onboarding_completed) {
+            router.push('/(tabs)/apply');
+          } else if (profile.intro_completed) {
+            const firstIncompleteStep = findFirstIncompleteStep(profile);
+            router.push(`/onboarding/${firstIncompleteStep}`);
+          } else {
             router.push('/intro');
-            }
+          }
         }, 100);
         
         return profile;
@@ -398,6 +445,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw error;
     }
     };
+
+  // Helper function to find first incomplete step
+  const findFirstIncompleteStep = (profile: UserProfile): string => {
+    const stepOrder = [
+      'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'race', 
+      'veteranStatus', 'disabilityStatus', 'age', 'countries', 'location', 
+      'rating', 'resume', 'referral'
+    ];
+    
+    const isStepComplete = (step: string): boolean => {
+      switch (step) {
+        case 'firstName': 
+          return (profile.first_name || '').trim().length > 0;
+        case 'lastName': 
+          return (profile.last_name || '').trim().length > 0;
+        case 'email': 
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email || '');
+        case 'phoneNumber': 
+          return (profile.phone_number || '').replace(/\D/g, '').length >= 10;
+        case 'gender': 
+          return (profile.gender || '').trim().length > 0;
+        case 'race': 
+          return (profile.race || '').trim().length > 0;
+        case 'veteranStatus': 
+          return (profile.veteran || '').trim().length > 0;
+        case 'disabilityStatus': 
+          return (profile.disability || '').trim().length > 0;
+        case 'age': 
+          return (profile.age || '').trim().length > 0;
+        case 'countries': 
+          return !!(profile.applying_countries && Array.isArray(profile.applying_countries) && profile.applying_countries.length > 0);
+        case 'location': 
+          return (profile.location || '').trim().length > 0;
+        case 'rating': 
+          return true; // Rating is always optional/complete
+        case 'resume':
+          return (profile.resume_url || '').trim().length > 0;
+        case 'referral':
+          return true; // Referral is always optional/complete
+        default: 
+          return false;
+      }
+    };
+    
+    // Find first incomplete step, default to firstName if all are complete
+    return stepOrder.find(step => !isStepComplete(step)) || 'firstName';
+  };
 
     const signOut = async (): Promise<void> => {
     try {
@@ -464,6 +558,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthState,
     setCurrentUser,
     setUserProfile,
+    updateUserProfile,
     setPostAuthFlow,
     setDidSync,
     setIsAuthenticating,
@@ -528,3 +623,5 @@ export const useAuth = (): AuthContextValue => {
   }
   return context;
 };
+
+export { supabaseClient as supabase };

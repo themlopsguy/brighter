@@ -20,13 +20,42 @@ import AppleIcon from '@/components/AppleIcon';    // Add this
 import { Ionicons } from '@expo/vector-icons';     // Add this
 import { useAuth } from '@/services/AuthContext';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { Asset } from 'expo-asset';
 
 export default function WelcomeScreen() {
-  const player = useVideoPlayer(require('../assets/videos/brighter_welcome.mp4'), player => {
-    player.loop = true;
-    player.play();
-    player.muted = true;
-  });
+  const [videoAsset, setVideoAsset] = useState<Asset | null>(null);
+  const [assetLoaded, setAssetLoaded] = useState(false);
+
+  // Load video asset
+  useEffect(() => {
+    const loadVideoAsset = async () => {
+      try {
+        const asset = Asset.fromModule(require('../assets/videos/brighter_welcome.mp4'));
+        await asset.downloadAsync();
+        setVideoAsset(asset);
+        setAssetLoaded(true);
+      } catch (error) {
+        console.error('Failed to load video asset:', error);
+        setAssetLoaded(true); // Still render the rest of the component
+      }
+    };
+
+    loadVideoAsset();
+  }, []);
+
+  // Don't create video player until asset is loaded
+  const player = useVideoPlayer(
+    assetLoaded && videoAsset 
+      ? { uri: videoAsset.localUri || videoAsset.uri }
+      : null, 
+    player => {
+      if (player) {
+        player.loop = true;
+        player.play();
+        player.muted = true;
+      }
+    }
+  );
 
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentScreen, setCurrentScreen] = useState<'auth' | 'emailSignIn' | 'emailSignUp'>('auth');
@@ -321,14 +350,16 @@ export default function WelcomeScreen() {
   return (
     <>
     <SafeAreaView style={styles.container}>
-      <VideoView
-        style={styles.backgroundVideo}
-        player={player}
-        allowsFullscreen={false}
-        allowsPictureInPicture={false}
-        contentFit="cover"
-        nativeControls={false}
-      />
+      {assetLoaded && videoAsset && (
+        <VideoView
+          style={styles.backgroundVideo}
+          player={player}
+          allowsFullscreen={false}
+          allowsPictureInPicture={false}
+          contentFit="cover"
+          nativeControls={false}
+        />
+      )}
 
       <View style={styles.overlay} />
 

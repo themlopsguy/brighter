@@ -6,6 +6,33 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+import { usePlacement, useUser } from "expo-superwall";
+import { Alert, Button, Text, View } from "react-native";
+
+function PaywallScreen() {
+  const { registerPlacement, state: placementState } = usePlacement({
+    onError: (err) => console.error("Placement Error:", err),
+    onPresent: (info) => console.log("Paywall Presented:", info),
+    onDismiss: (info, result) =>
+      console.log("Paywall Dismissed:", info, "Result:", result),
+  });
+
+  const handleTriggerPlacement = async () => {
+    await registerPlacement({
+      placement: "campaign_trigger"
+    });
+  };
+
+  return (
+    <View style={{ padding: 20 }}>
+      <Button title="Show Paywall" onPress={handleTriggerPlacement} />
+      {placementState && (
+        <Text>Last Paywall Result: {JSON.stringify(placementState)}</Text>
+      )}
+    </View>
+  );
+}
+
 export default function HomeScreen() {
   return (
     <ParallaxScrollView
@@ -16,6 +43,7 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
+      <PaywallScreen />
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />

@@ -10,7 +10,8 @@ import {
   useWindowDimensions,
   KeyboardAvoidingView,
   Keyboard,
-  KeyboardEvent
+  KeyboardEvent,
+  ActivityIndicator
 } from 'react-native';
 import { 
   PrepTalkTheme, 
@@ -23,12 +24,16 @@ interface OnboardingFooterProps {
   buttonText: string;
   onContinue: () => void;
   isDisabled?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
 }
 
 export default function OnboardingFooter({ 
   buttonText, 
   onContinue, 
-  isDisabled = false 
+  isDisabled = false,
+  isLoading = false,
+  loadingText
 }: OnboardingFooterProps) {
   const { width } = useWindowDimensions();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -68,6 +73,18 @@ export default function OnboardingFooter({
       medium: 22,
       large: 24,
       xlarge: 28
+    }),
+      spinnerSize: getResponsiveValue({
+      small: 16,
+      medium: 18,
+      large: 20,
+      xlarge: 22
+    }),
+    spinnerMarginRight: getResponsiveValue({
+      small: 8,
+      medium: 10,
+      large: 12,
+      xlarge: 14
     })
   };
 
@@ -108,6 +125,12 @@ export default function OnboardingFooter({
     return responsiveValues.footerPaddingBottom; // Responsive padding when keyboard is hidden
   };
 
+  // Determine if button should be disabled
+  const buttonDisabled = isDisabled || isLoading;
+
+  // Determine display text
+  const displayText = isLoading ? (loadingText || buttonText) : buttonText;
+
   return (
     <View style={[
       styles.footerSection, 
@@ -128,19 +151,33 @@ export default function OnboardingFooter({
               paddingHorizontal: responsiveValues.buttonPaddingHorizontal,
               borderRadius: responsiveValues.borderRadius
             },
-            isDisabled && styles.disabledButton
+            buttonDisabled && styles.disabledButton,
+            isLoading && styles.loadingButton
           ]}
-          onPress={isDisabled ? undefined : onContinue}
-          activeOpacity={isDisabled ? 1 : 0.8}
-          disabled={isDisabled}
+          onPress={buttonDisabled ? undefined : onContinue}
+          activeOpacity={buttonDisabled ? 1 : 0.8}
+          disabled={buttonDisabled}
         >
-          <Text style={[
-            styles.primaryButtonText, 
-            { fontSize: buttonFontSize },
-            isDisabled && styles.disabledButtonText
-          ]}>
-            {buttonText}
-          </Text>
+          <View style={styles.buttonContent}>
+            {isLoading && (
+              <ActivityIndicator
+                size={responsiveValues.spinnerSize}
+                color="#FFFFFF"
+                style={[
+                  styles.spinner,
+                  { marginRight: responsiveValues.spinnerMarginRight }
+                ]}
+              />
+            )}
+            <Text style={[
+              styles.primaryButtonText, 
+              { fontSize: buttonFontSize },
+              buttonDisabled && !isLoading && styles.disabledButtonText,
+              isLoading && styles.loadingButtonText
+            ]}>
+              {displayText}
+            </Text>
+          </View>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
@@ -158,6 +195,14 @@ const styles = StyleSheet.create({
     backgroundColor: PrepTalkTheme.colors.primary,
     alignItems: 'center',
   },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  spinner: {
+    // marginRight is set dynamically via responsiveValues
+  },
   primaryButtonText: {
     ...PrepTalkTheme.typography.headline,
     color: '#FFFFFF',
@@ -169,5 +214,12 @@ const styles = StyleSheet.create({
   },
   disabledButtonText: {
     color: '#999999',
+  },
+  loadingButton: {
+    backgroundColor: PrepTalkTheme.colors.primary,
+    opacity: 0.9,
+  },
+  loadingButtonText: {
+    color: '#FFFFFF',
   },
 });

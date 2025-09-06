@@ -21,6 +21,7 @@ import Animated, {
   cancelAnimation
 } from 'react-native-reanimated';
 import { VideoView, useVideoPlayer } from 'expo-video';
+import * as Haptics from 'expo-haptics';
 import { PrepTalkTheme, useScreenSize, getResponsiveValue } from '@/constants/Theme';
 
 interface IntroStep2Props {
@@ -55,6 +56,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
   const appliedTranslateX = useSharedValue(0);
   const secondCardScale = useSharedValue(0.9);
   const finalCardScale = useSharedValue(0.8);
+  
 
   // Responsive values
   const responsiveValues = {
@@ -320,7 +322,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
 
   const videoOverlayAnimatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: leftSwipeCompleted ? 1 : 0,
+      opacity: rightSwipeCompleted ? 1 : 0,
       transform: [{ scale: finalCardScale.value }],
     };
   });
@@ -434,13 +436,23 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
   };
 
   useEffect(() => {
-    if (leftSwipeCompleted) {
+    if (rightSwipeCompleted) {
       console.log('Starting video playback');
       player.play();
     } else {
       player.pause();
     }
-  }, [leftSwipeCompleted, player]);
+  }, [rightSwipeCompleted, player]);
+
+function triggerHaptic(type: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Medium) {
+  try {
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+      void Haptics.impactAsync(type); // don't await; avoid unhandled promise in worklet bridge
+    }
+  } catch (e) {
+    console.warn('Haptics error:', e);
+  }
+}
 
   // Gesture handlers (keep existing logic but use responsive values)
   const panGesture = Gesture.Pan()
@@ -466,6 +478,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
         });
       } else {
         console.log('Auto-completing swipe - animating card off screen');
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Medium);
         
         translateX.value = withTiming(width + 100, {
           duration: 300,
@@ -475,51 +488,11 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
             console.log('Card successfully swiped away!');
             runOnJS(setRightSwipeCompleted)(true);
 
-            console.log('Scaling second card from 0.9 to 1.0');
-            secondCardScale.value = withTiming(1.0, {
-              duration: 400,
-              easing: Easing.out(Easing.quad)
-            }, (finished) => {
-              console.log('Second card scale finished:', finished);
-            });
-          }
-        });
-      }
-    });
+            if (onSwipeComplete) {
+              runOnJS(onSwipeComplete)();
+            }
 
-  const leftPanGesture = Gesture.Pan()
-    .onStart(() => {
-      console.log('Left Pan gesture started');
-    })
-    .onUpdate((event) => {
-      secondTranslateX.value = Math.min(0, event.translationX);
-      
-      if (!hasStartedLeftSwipe && event.translationX < -10) {
-        runOnJS(stopLeftSwipeAnimations)();
-      }
-    })
-    .onEnd((event) => {
-      console.log('Left Pan gesture ended at:', secondTranslateX.value);
-      
-      const swipeThreshold = -150;
-      
-      if (secondTranslateX.value > swipeThreshold) {
-        secondTranslateX.value = withSpring(0, {
-          damping: 15,
-          stiffness: 150,
-        });
-      } else {
-        console.log('Auto-completing swipe - animating card off screen');
-        
-        secondTranslateX.value = withTiming(-(width + 100), {
-          duration: 300,
-          easing: Easing.out(Easing.quad),
-        }, (finished) => {
-          if (finished) {
-            console.log('Second card successfully swiped away!');
-            runOnJS(setLeftSwipeCompleted)(true);
-
-            console.log('Final second card from 0.8 to 1.0');
+            console.log('Scaling final card from 0.9 to 1.0');
             finalCardScale.value = withTiming(1.0, {
               duration: 400,
               easing: Easing.out(Easing.quad)
@@ -527,13 +500,66 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
               console.log('Final card scale finished:', finished);
             });
 
-            if (onSwipeComplete) {
-              runOnJS(onSwipeComplete)();
-            }
+            
+            // secondCardScale.value = withTiming(1.0, {
+            //   duration: 400,
+            //   easing: Easing.out(Easing.quad)
+            // }, (finished) => {
+            //   console.log('Second card scale finished:', finished);
+            // });
           }
         });
       }
     });
+
+  // const leftPanGesture = Gesture.Pan()
+  //   .onStart(() => {
+  //     console.log('Left Pan gesture started');
+  //   })
+  //   .onUpdate((event) => {
+  //     secondTranslateX.value = Math.min(0, event.translationX);
+      
+  //     if (!hasStartedLeftSwipe && event.translationX < -10) {
+  //       runOnJS(stopLeftSwipeAnimations)();
+  //     }
+  //   })
+  //   .onEnd((event) => {
+  //     console.log('Left Pan gesture ended at:', secondTranslateX.value);
+  //     runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Medium);
+      
+  //     const swipeThreshold = -150;
+      
+  //     if (secondTranslateX.value > swipeThreshold) {
+  //       secondTranslateX.value = withSpring(0, {
+  //         damping: 15,
+  //         stiffness: 150,
+  //       });
+  //     } else {
+  //       console.log('Auto-completing swipe - animating card off screen');
+        
+  //       secondTranslateX.value = withTiming(-(width + 100), {
+  //         duration: 300,
+  //         easing: Easing.out(Easing.quad),
+  //       }, (finished) => {
+  //         if (finished) {
+  //           console.log('Second card successfully swiped away!');
+  //           runOnJS(setLeftSwipeCompleted)(true);
+
+  //           console.log('Final second card from 0.8 to 1.0');
+  //           finalCardScale.value = withTiming(1.0, {
+  //             duration: 400,
+  //             easing: Easing.out(Easing.quad)
+  //           }, (finished) => {
+  //             console.log('Final card scale finished:', finished);
+  //           });
+
+  //           if (onSwipeComplete) {
+  //             runOnJS(onSwipeComplete)();
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
 
   return (
     <View style={styles.container}>
@@ -554,7 +580,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
         />
 
         {Platform.OS === 'ios' ? (
-          leftSwipeCompleted && (
+           (
             <Animated.View
               style={[
                 styles.videoOverlay,
@@ -572,11 +598,12 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
                 contentFit="fill"
                 allowsFullscreen={false}
                 allowsPictureInPicture={false}
+                nativeControls={false}
               />
             </Animated.View>
           )
         ) : (
-          leftSwipeCompleted && (
+           (
             <Animated.View
               style={[
                 styles.videoOverlay,
@@ -599,7 +626,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
           )
         )}
 
-        <GestureDetector gesture={leftPanGesture}>
+        {/* <GestureDetector gesture={leftPanGesture}>
           <Animated.Image
             source={require('@/assets/images/intro/intro-swipe-card-2.png')}
             style={[
@@ -613,9 +640,9 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
             ]}
             resizeMode="contain"
           />
-        </GestureDetector>
+        </GestureDetector> */}
 
-        {!leftSwipeCompleted && (
+        {/* {!leftSwipeCompleted && (
           <Animated.Image 
             source={require('@/assets/images/intro/intro-passed.png')}
             style={[
@@ -629,7 +656,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
             ]}
             resizeMode="contain"
           />
-        )}
+        )} */}
 
         {Platform.OS === 'ios' ? (
           <Animated.View
@@ -661,7 +688,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
           </Animated.View>
         )}
 
-        {Platform.OS === 'ios' ? (
+        {/* {Platform.OS === 'ios' ? (
           <Animated.View
             style={[
               styles.leftGlowContainer,
@@ -689,7 +716,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
           >
             <Animated.View style={styles.androidLeftGlowInner} />
           </Animated.View>
-        )}
+        )} */}
 
         {!rightSwipeCompleted && (
           <GestureDetector gesture={panGesture}>
@@ -739,7 +766,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
           resizeMode="contain"
         />
         
-        <Animated.Image 
+        {/* <Animated.Image 
           source={require('@/assets/images/intro/left-swipe-hand.png')}
           style={[
             styles.handOverlay,
@@ -751,7 +778,7 @@ export default function IntroStep2({ isActive = true, onSwipeComplete }: IntroSt
             leftHandAnimatedStyle,
           ]}
           resizeMode="contain"
-        />
+        /> */}
       </View>
     </View>
   );

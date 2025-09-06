@@ -16,11 +16,11 @@ import {
   useResponsiveHeaderPadding,
   getResponsiveValue 
 } from '@/constants/Theme';
-import { useOnboardingData } from './_layout';
+import { useAuth } from '@/services/AuthContext';
 import BirthdayPicker from '@/components/BirthdayPicker';
 
 export default function OnboardingAge() {
-  const { data, updateData } = useOnboardingData();
+  const { userProfile, updateUserProfile } = useAuth();
   const { width } = useWindowDimensions();
   
   // Use responsive utilities
@@ -68,12 +68,6 @@ export default function OnboardingAge() {
       large: 24,
       xlarge: 30
     }),
-    containerMaxWidth: getResponsiveValue({
-      small: 280,
-      medium: 300,
-      large: 320,
-      xlarge: 350
-    }),
     horizontalPaddingPercent: getResponsiveValue({
       small: 0.12,
       medium: 0.10,
@@ -98,6 +92,24 @@ export default function OnboardingAge() {
   const today = new Date();
   const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate()); // 13 years ago
   const minDate = new Date(today.getFullYear() - 80, today.getMonth(), today.getDate()); // 80 years ago
+
+    useEffect(() => {
+    // Initialize state from existing onboarding data
+    if (userProfile?.age) {
+        if (userProfile?.age === 'prefer_not_to_say') {
+        setPreferNotToSay(true);
+        setHasBirthdaySelected(false);
+        } else {
+        // Age is set, restore birthday if available
+        if (userProfile?.date_of_birth) {
+            const savedDate = new Date(userProfile?.date_of_birth);
+            setSelectedDate(savedDate);
+            setHasBirthdaySelected(true);
+            setPreferNotToSay(false);
+        }
+        }
+    }
+    }, [userProfile?.age, userProfile?.date_of_birth]);
 
   // Trigger animation when component mounts
   useEffect(() => {
@@ -133,6 +145,13 @@ export default function OnboardingAge() {
     return age;
   };
 
+  const formatDateForDatabase = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Handle date change
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
@@ -141,18 +160,20 @@ export default function OnboardingAge() {
     
     // Calculate age and store as string
     const calculatedAge = calculateAge(date);
-    updateData('age', calculatedAge.toString());
-    
-    // Store the birthday in the data for reference
-    updateData('birthday', date.toISOString());
+    updateUserProfile({ 
+      age: calculatedAge.toString(),
+      date_of_birth: date.toISOString().split('T')[0]
+    });
   };
 
   // Handle "Prefer not to say" selection
   const handlePreferNotToSay = () => {
     setPreferNotToSay(true);
     setHasBirthdaySelected(false);
-    updateData('age', 'prefer_not_to_say');
-    updateData('birthday', ''); // Clear birthday when prefer not to say is selected
+    updateUserProfile({ 
+      age: 'prefer_not_to_say',
+      date_of_birth: '' // Use null instead of empty string for proper database handling
+    });
   };
 
   return (
@@ -187,7 +208,6 @@ export default function OnboardingAge() {
             styles.datePickerContainer,
             { 
               marginTop: responsiveValues.datePickerMarginTop,
-              maxWidth: responsiveValues.containerMaxWidth,
               transform: [
                 {
                   translateY: datePickerAnim.interpolate({
@@ -215,7 +235,6 @@ export default function OnboardingAge() {
             styles.preferButtonContainer,
             { 
               marginTop: responsiveValues.buttonMarginTop,
-              maxWidth: responsiveValues.containerMaxWidth,
               transform: [
                 {
                   translateY: buttonAnim.interpolate({

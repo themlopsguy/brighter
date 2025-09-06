@@ -17,10 +17,10 @@ import {
   useResponsiveHeaderPadding,
   getResponsiveValue 
 } from '@/constants/Theme';
-import { useOnboardingData } from './_layout';
+import { useAuth } from '@/services/AuthContext';
 
 export default function OnboardingVeteranStatus() {
-  const { data, updateData } = useOnboardingData();
+  const { userProfile, updateUserProfile } = useAuth();
   const { width } = useWindowDimensions();
 
   // Use responsive utilities
@@ -109,7 +109,7 @@ export default function OnboardingVeteranStatus() {
   }, []);
 
   const handleVeteranStatusSelect = (value: string) => {
-    updateData('veteranStatus', value);
+    updateUserProfile({ veteran: value });
   };
 
   return (
@@ -175,7 +175,7 @@ export default function OnboardingVeteranStatus() {
                       paddingVertical: responsiveValues.buttonPaddingVertical,
                       paddingHorizontal: responsiveValues.buttonPaddingHorizontal
                     },
-                    data.veteranStatus === option.value && styles.selectedButton
+                    userProfile?.veteran === option.value && styles.selectedButton
                   ]}
                   onPress={() => handleVeteranStatusSelect(option.value)}
                   activeOpacity={0.7}
@@ -183,7 +183,7 @@ export default function OnboardingVeteranStatus() {
                   <Text style={[
                     styles.buttonText,
                     { fontSize: responsiveValues.buttonFontSize },
-                    data.veteranStatus === option.value && styles.selectedButtonText
+                    userProfile?.veteran === option.value && styles.selectedButtonText
                   ]}>
                     {option.label}
                   </Text>

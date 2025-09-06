@@ -18,11 +18,11 @@ import {
   useResponsiveHeaderPadding,
   getResponsiveValue 
 } from '@/constants/Theme';
-import { useOnboardingData } from './_layout';
+import { useAuth } from '@/services/AuthContext';
 import CountrySelectionModal, { findCountryByName, CountryWithAuth } from '@/components/CountrySelectionModal';
 
 export default function OnboardingCountries() {
-  const { data, updateData } = useOnboardingData();
+  const { userProfile, updateUserProfile } = useAuth();
   const { width } = useWindowDimensions();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -113,9 +113,7 @@ export default function OnboardingCountries() {
   const horizontalPadding = width * responsiveValues.horizontalPaddingPercent;
 
   // Get current countries from data, default to ['United States']
-    const currentCountries = data.countries !== undefined 
-    ? data.countries 
-    : [{ name: 'United States', authorizationStatus: 'Citizen' as const }];
+  const currentCountries = userProfile?.applying_countries || [];
 
   // Animation refs for country items and add button
   const animationRefs = useRef<Animated.Value[]>([]);
@@ -153,20 +151,19 @@ export default function OnboardingCountries() {
   }, [currentCountries.length]);
 
   const handleRemoveCountry = (countryToRemove: string) => {
-    const updatedCountries = currentCountries.filter(country => country.country_name !== countryToRemove);
-    updateData('countries', updatedCountries);
+    const updatedCountries = currentCountries.filter((country: any) => country.country_name !== countryToRemove);
+    updateUserProfile({ applying_countries: updatedCountries });
   };
 
   const handleAddCountries = () => {
     setIsModalVisible(true);
   };
 
-const handleSaveCountries = (selectedCountries: CountryWithAuth[]) => {
-  // Transform to database format before saving
-  const transformedData = transformCountryData(selectedCountries);
-  updateData('countries', transformedData);
-  setIsModalVisible(false);
-};
+  const handleSaveCountries = (selectedCountries: CountryWithAuth[]) => {
+    const transformedData = transformCountryData(selectedCountries);
+    updateUserProfile({ applying_countries: transformedData });
+    setIsModalVisible(false);
+  };
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
@@ -391,7 +388,7 @@ const handleSaveCountries = (selectedCountries: CountryWithAuth[]) => {
                 }
               ]}
               onPress={handleAddCountries}
-              activeOpacity={0.7}
+              activeOpacity={0.8}
             >
               <Ionicons 
                 name="add" 
@@ -495,7 +492,7 @@ listSubtitle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: PrepTalkTheme.colors.mediumGray,
     borderStyle: 'dashed',
     borderRadius: 50,
@@ -504,10 +501,12 @@ listSubtitle: {
   },
   addIcon: {
     marginRight: 8,
+    opacity: 0.8
   },
   addButtonText: {
     fontFamily: 'Nunito-SemiBold',
     color: PrepTalkTheme.colors.dark,
+    opacity: 0.8,
     textAlign: 'center',
   },
 emptyStateContainer: {

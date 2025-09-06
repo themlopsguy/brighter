@@ -9,10 +9,18 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "developmentClient": true,
+      "distribution": "store",
+      "ios": {
+        "resourceClass": "m-medium"
+      }
     }
   },
   "submit": {

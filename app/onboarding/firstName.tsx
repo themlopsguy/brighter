@@ -9,9 +9,10 @@ import {
   getResponsiveValue 
 } from '@/constants/Theme';
 import { useOnboardingData } from './_layout';
+import { useAuth } from '@/services/AuthContext';
 
 export default function OnboardingFirstName() {
-  const { data, updateData } = useOnboardingData();
+  const { userProfile, updateUserProfile } = useAuth();
   const { width } = useWindowDimensions();
   
   // Use responsive utilities
@@ -54,7 +55,7 @@ export default function OnboardingFirstName() {
   const horizontalPadding = width * responsiveValues.horizontalPaddingPercent;
 
   const handleFirstNameChange = (text: string) => {
-    updateData('firstName', text);
+    updateUserProfile({ first_name: text });
   };
 
   return (
@@ -95,7 +96,7 @@ export default function OnboardingFirstName() {
                 paddingHorizontal: responsiveValues.inputPadding
               }
             ]}
-            value={data.firstName}
+            value={userProfile?.first_name || ''}
             onChangeText={handleFirstNameChange}
             placeholder="Enter first name"
             placeholderTextColor={PrepTalkTheme.colors.mediumGray}
@@ -108,7 +109,7 @@ export default function OnboardingFirstName() {
           <View style={[
             styles.underline,
             { 
-              backgroundColor: data.firstName.trim().length > 0
+              backgroundColor: (userProfile?.first_name || '').trim().length > 0
                 ? PrepTalkTheme.colors.primary 
                 : PrepTalkTheme.colors.mediumGray 
             }

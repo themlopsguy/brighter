@@ -12,6 +12,7 @@ import {
   Easing,
   ScrollView
 } from 'react-native';
+import { Asset } from 'expo-asset';
 import Rive from 'rive-react-native';
 import { PrepTalkTheme, useScreenSize, getResponsiveValue } from '@/constants/Theme';
 import AIConversationWave from '@/components/AIConversationWave';
@@ -35,7 +36,8 @@ export default function IntroStep3({ isActive = true }: IntroStep3Props) {
   const [typewriterText, setTypewriterText] = useState('');
   const typewriterOpacity = useRef(new Animated.Value(0)).current;
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-
+  const riveAsset = Asset.fromModule(require('@/assets/animations/ai-intro-line.riv'));
+  
   const messages = [
     "👋 Hi there! I'll be your AI coach. \n\n I can help you set up success plans to test your skills and knolwedge for a specific role.",
     "And I can help you conduct custom realistic interviews based on the actual job you want to practice for, analyze how you did and where you can improve! \n\n Ready to get started? 🚀"
@@ -309,7 +311,7 @@ export default function IntroStep3({ isActive = true }: IntroStep3Props) {
               ]}
             >
               <Rive
-                source={require('@/assets/animations/ai-intro-line.riv')}
+                url={riveAsset.localUri || riveAsset.uri} 
                 style={{ width: '100%', height: '100%' }}
                 autoplay={true}
               />

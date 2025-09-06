@@ -14,42 +14,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { PrepTalkTheme } from '@/constants/Theme';
 import OnboardingHeader from '@/components/onboarding/OnboardingHeader';
 import OnboardingFooter from '@/components/onboarding/OnboardingFooter';
-import { CountryWithAuth } from '@/components/CountrySelectionModal';
+import { useAuth } from '@/services/AuthContext';
 
-// Context for sharing onboarding data across steps
-interface OnboardingData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  countryCode: string;
-  selectedCountry: string;
-  gender: string;
-  race: string;
-  veteranStatus: string;
-  disabilityStatus: string;
-  age: string;
-  birthday: string;
-  countries: Array<{
-    country_name: string;
-    citizen: boolean;
-    requires_sponsorship: boolean;
-    work_authorization_status: boolean;
-  }>;
-}
+const FooterContext = createContext<{
+  setCustomFooterAction: (action: (() => void) | undefined) => void;
+  setFooterLoading: (loading: boolean) => void;
+  setFooterButtonText: (text: string) => void;
+} | null>(null);
 
-interface OnboardingContextType {
-  data: OnboardingData;
-  updateData: (field: keyof OnboardingData, value: string) => void;
-  isStepValid: (step: string) => boolean;
-}
-
-const OnboardingContext = createContext<OnboardingContextType | null>(null);
-
-export function useOnboardingData() {
-  const context = useContext(OnboardingContext);
+export function useFooterActions() {
+  const context = useContext(FooterContext);
   if (!context) {
-    throw new Error('useOnboardingData must be used within OnboardingProvider');
+    throw new Error('useFooterActions must be used within FooterProvider');
   }
   return context;
 }
@@ -57,78 +33,82 @@ export function useOnboardingData() {
 export default function OnboardingLayout() {
   const router = useRouter();
   const segments = useSegments();
+  const { userProfile, updateUserProfile } = useAuth();
   
   // Get current step from route
   const currentSegment = segments[segments.length - 1] as string;
+
+  const [customFooterAction, setCustomFooterAction] = useState<(() => void) | undefined>();
+  const [footerLoading, setFooterLoading] = useState(false);
+  const [footerButtonText, setFooterButtonText] = useState<string>('');
   
   // Map routes to step numbers and data
-  const stepMap: Record<string, { step: number; buttonText: string; dataKey: string }> = {
-    'firstName': { step: 0, buttonText: 'Continue', dataKey: 'firstName' },
-    'lastName': { step: 1, buttonText: 'Continue', dataKey: 'lastName' },
-    'email': { step: 2, buttonText: 'Continue', dataKey: 'email' },
-    'phoneNumber': { step: 3, buttonText: 'Continue', dataKey: 'phoneNumber' },
-    'gender': { step: 4, buttonText: 'Continue', dataKey: 'gender' },
-    'race': { step: 5, buttonText: 'Continue', dataKey: 'race' },
-    'veteranStatus': { step: 6, buttonText: 'Continue', dataKey: 'veteranStatus' },
-    'disabilityStatus': { step: 7, buttonText: 'Continue', dataKey: 'disabilityStatus' },
-    'age': { step: 8, buttonText: 'Continue', dataKey: 'age' },
-    'countries': { step: 9, buttonText: 'Get Started', dataKey: 'countries'}
+  const stepMap: Record<string, { step: number; buttonText: string;}> = {
+    'firstName': { step: 0, buttonText: 'Continue'},
+    'lastName': { step: 1, buttonText: 'Continue'},
+    'email': { step: 2, buttonText: 'Continue'},
+    'phoneNumber': { step: 3, buttonText: 'Continue'},
+    'gender': { step: 4, buttonText: 'Continue'},
+    'race': { step: 5, buttonText: 'Continue'},
+    'veteranStatus': { step: 6, buttonText: 'Continue'},
+    'disabilityStatus': { step: 7, buttonText: 'Continue'},
+    'age': { step: 8, buttonText: 'Continue'},
+    'countries': { step: 9, buttonText: 'Continue'},
+    'location': { step: 10, buttonText: 'Continue'},
+    'rating': { step: 11, buttonText: 'Continue'},
+    'resume': { step: 12, buttonText: 'Continue'},
+    'referral': { step: 13, buttonText: 'Get Started'}
   };
   
   const currentStepInfo = stepMap[currentSegment] || stepMap.firstName;
-  
-  // Onboarding data state
-  const [data, setData] = useState<OnboardingData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    countryCode: '+1',
-    selectedCountry: 'United States',
-    gender: '',
-    race: '',
-    veteranStatus: '',
-    disabilityStatus: '',
-    age: '',
-    birthday: '',
-    countries: [{ country_name: 'United States',
-                  citizen: true,
-                  requires_sponsorship: false,
-                  work_authorization_status: true}]
-  });
-
-  const updateData = (field: keyof OnboardingData, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
-  };
 
   const isStepValid = (step: string): boolean => {
+    if (!userProfile) return false;
+
     switch (step) {
       case 'firstName': 
-        return data.firstName.trim().length > 0;
+        return (userProfile.first_name || '').trim().length > 0;
       case 'lastName': 
-        return data.lastName.trim().length > 0;
+        return (userProfile.last_name || '').trim().length > 0;
       case 'email': 
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userProfile.email || '');
       case 'phoneNumber': 
-        return data.phoneNumber.replace(/\D/g, '').length >= 10;
+        return (userProfile.phone_number || '').replace(/\D/g, '').length >= 10;
       case 'gender': 
-        return data.gender.trim().length > 0;
+        return (userProfile.gender || '').trim().length > 0;
       case 'race': 
-        return data.race.trim().length > 0;
+        return (userProfile.race || '').trim().length > 0;
       case 'veteranStatus': 
-        return data.veteranStatus.trim().length > 0;
+        return (userProfile.veteran || '').trim().length > 0;
       case 'disabilityStatus': 
-        return data.disabilityStatus.trim().length > 0;
+        return (userProfile.disability || '').trim().length > 0;
       case 'age': 
-        return data.age.trim().length > 0;
+        return (userProfile.age || '').trim().length > 0;
       case 'countries': 
-        return data.countries && data.countries.length > 0;
+        return !!(userProfile.applying_countries && Array.isArray(userProfile.applying_countries) && userProfile.applying_countries.length > 0);
+      case 'location': 
+        return (userProfile.location || '').trim().length > 0;
+      case 'rating': 
+        return true;
+      case 'resume':
+        return (userProfile.resume_url || '').trim().length > 0;
+      case 'referral':
+        return true
       default: 
         return false;
     }
   };
 
   const handleContinue = () => {
+
+    console.log(userProfile)
+    
+    // If there's a custom footer action, use it instead of navigation
+    if (customFooterAction) {
+        customFooterAction();
+        return;
+    }
+
     switch (currentSegment) {
       case 'firstName':
         router.push('/onboarding/lastName');
@@ -158,7 +138,20 @@ export default function OnboardingLayout() {
         router.push('/onboarding/countries');
         break;
       case 'countries':
-        router.push('/(tabs)');
+        router.push('/onboarding/location');
+        break;
+      case 'location':
+        router.push('/onboarding/rating');
+        break;
+      case 'rating':
+        router.push('/onboarding/resume');
+        break;
+      case 'resume':
+        router.push('/onboarding/referral');
+        break;
+      case 'referral':
+        updateUserProfile({ onboarding_completed: true });
+        router.push('/(tabs)/apply');
         break;
       default:
         // Fallback
@@ -199,14 +192,40 @@ export default function OnboardingLayout() {
       case 'countries':
         router.push('/onboarding/age');
         break;
+      case 'location':
+        router.push('/onboarding/countries');
+        break;
+      case 'rating':
+        router.push('/onboarding/location');
+        break;
+      case 'resume':
+        router.push('/onboarding/rating');
+        break;
+      case 'referral':
+        router.push('/onboarding/resume');
+        break;
       default:
         router.back();
         break;
     }
   };
 
+  // Determine the button text to display
+  const getDisplayButtonText = () => {
+    // If a custom button text is set (like from referral screen), use it
+    if (footerButtonText) {
+      return footerButtonText;
+    }
+    // Otherwise use default text for this step
+    return currentStepInfo.buttonText;
+  };
+
   return (
-    <OnboardingContext.Provider value={{ data, updateData, isStepValid }}>
+    <FooterContext.Provider value={{
+      setCustomFooterAction,
+      setFooterLoading,
+      setFooterButtonText
+    }}>
       <SafeAreaView style={styles.container}>
         <ExpoStatusBar style="dark" />
         <LinearGradient
@@ -218,7 +237,7 @@ export default function OnboardingLayout() {
         >
           <OnboardingHeader 
             currentStep={currentStepInfo.step}
-            totalSteps={10}
+            totalSteps={14}
             onBackPress={handleBack}
           />
 
@@ -232,14 +251,15 @@ export default function OnboardingLayout() {
             keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
           >
             <OnboardingFooter 
-              buttonText={currentStepInfo.buttonText}
+              buttonText={getDisplayButtonText()}
               onContinue={handleContinue}
               isDisabled={!isStepValid(currentSegment)}
+              isLoading={footerLoading}
             />
           </KeyboardAvoidingView>
         </LinearGradient>
       </SafeAreaView>
-    </OnboardingContext.Provider>
+    </FooterContext.Provider>
   );
 }
 

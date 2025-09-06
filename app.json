@@ -3,6 +3,7 @@
     "name": "brighter",
     "slug": "brighter",
     "version": "1.0.0",
+    "platforms": ["ios", "android"],
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "brighter",
@@ -11,8 +12,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gallenlabs.brighter",
+      "buildNumber": "2",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Brighter uses your location to help you find relevant job opportunities in your area and to auto-fill location information on job applications.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Brighter uses your location to help you find relevant job opportunities in your area and to auto-fill location information on job applications."
       }
     },
     "android": {
@@ -27,6 +31,9 @@
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b53e56ac-db0b-41f8-810e-aec11218fcc8"
     },
     "plugins": [
       "expo-router",
@@ -46,7 +53,14 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.346171187215-vfgtbu835ma7httdf6fg8an83a8h46nr"
         }
-      ]
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Brighter uses your location to help you find relevant job opportunities in your area and to auto-fill location information on job applications."
+        }
+      ],
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true

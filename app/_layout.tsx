@@ -5,8 +5,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import config from '@/constants/Config';
+import { SuperwallProvider } from "expo-superwall";
 import { AuthProvider } from '@/services/AuthContext';
+import { JobsProvider } from '@/services/JobsContext';
 
 // Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -43,30 +45,34 @@ export default function RootLayout() {
   }
 
   return (
+    <SuperwallProvider apiKeys={{ ios: config.superwallIosApiKey, android: config.superwallAndroidApiKey }}>
     <GestureHandlerRootView style={{ flex: 1 }}>
     <AuthProvider>
-      <Stack>
-        {/* Welcome screen - the initial route when app opens */}
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="intro" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        
-        {/* Auth modal - slides up from bottom */}
-        {/* <Stack.Screen
-          name="authModal"
-          options={{
-            presentation: 'modal',
-            headerShown: false,
-          }}
-        /> */}
-        
-        {/* Keep tabs for future authenticated screens */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <JobsProvider>
+        <Stack>
+          {/* Welcome screen - the initial route when app opens */}
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="intro" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+          
+          {/* Auth modal - slides up from bottom */}
+          {/* <Stack.Screen
+            name="authModal"
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+            }}
+          /> */}
+          
+          {/* Keep tabs for future authenticated screens */}
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </JobsProvider>
     </AuthProvider>
     </GestureHandlerRootView>
+    </SuperwallProvider>
   );
 }
