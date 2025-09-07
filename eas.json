@@ -1,7 +1,7 @@
 {
   "cli": {
     "version": ">= 16.13.2",
-    "appVersionSource": "remote"
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -9,14 +9,12 @@
       "distribution": "internal"
     },
     "preview": {
-      "developmentClient": true,
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium"
       }
     },
     "production": {
-      "developmentClient": true,
       "distribution": "store",
       "ios": {
         "resourceClass": "m-medium"
