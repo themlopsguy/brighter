@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import config from '@/constants/Config';
-import { SuperwallProvider } from "expo-superwall";
+//import { SuperwallProvider } from "expo-superwall";
 import { AuthProvider } from '@/services/AuthContext';
 import { JobsProvider } from '@/services/JobsContext';
 
@@ -45,7 +45,7 @@ export default function RootLayout() {
   }
 
   return (
-    <SuperwallProvider apiKeys={{ ios: config.superwallIosApiKey, android: config.superwallAndroidApiKey }}>
+    // <SuperwallProvider apiKeys={{ ios: config.superwallIosApiKey, android: config.superwallAndroidApiKey }}>
     <GestureHandlerRootView style={{ flex: 1 }}>
     <AuthProvider>
       <JobsProvider>
@@ -73,6 +73,6 @@ export default function RootLayout() {
       </JobsProvider>
     </AuthProvider>
     </GestureHandlerRootView>
-    </SuperwallProvider>
+    // </SuperwallProvider>
   );
 }
