@@ -9,6 +9,7 @@
     "scheme": "brighter",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "runtimeVersion": "53.0.0",
     "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
