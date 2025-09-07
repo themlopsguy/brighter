@@ -6,12 +6,12 @@ const config = {
   supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || Constants.expoConfig?.extra?.supabaseUrl,
   supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || Constants.expoConfig?.extra?.supabaseAnonKey,
   supabasePublishableKey: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || Constants.expoConfig?.extra?.supabasePublishableKey,
-  superwallIosApiKey: process.env.EXPO_PUBLIC_SUPERWALL_IOS_API_KEY || Constants.expoConfig?.extra?.superwallIosApiKey,
-  superwallAndroidApiKey: process.env.EXPO_PUBLIC_SUPERWALL_ANDROID_API_KEY || Constants.expoConfig?.extra?.superwallAndroidApiKey,
-  revenueCatApiKey: process.env.EXPO_PUBLIC_REVENUE_CAT_API_KEY || Constants.expoConfig?.extra?.revenueCatApiKey,
-  mixpanelToken: process.env.EXPO_PUBLIC_MIXPANEL_TOKEN || Constants.expoConfig?.extra?.mixpanelToken,
-  googlePlacesApiKey: process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY || Constants.expoConfig?.extra?.googlePlacesApiKey,
-  openaiApiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || Constants.expoConfig?.extra?.openaiApiKey
+  superwallIosApiKey: process.env.SUPERWALL_IOS_API_KEY || Constants.expoConfig?.extra?.superwallIosApiKey,
+  superwallAndroidApiKey: process.env.SUPERWALL_ANDROID_API_KEY || Constants.expoConfig?.extra?.superwallAndroidApiKey,
+  revenueCatApiKey: process.env.REVENUE_CAT_API_KEY || Constants.expoConfig?.extra?.revenueCatApiKey,
+  mixpanelToken: process.env.MIXPANEL_TOKEN || Constants.expoConfig?.extra?.mixpanelToken,
+  googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY || Constants.expoConfig?.extra?.googlePlacesApiKey,
+  openaiApiKey: process.env.OPENAI_API_KEY || Constants.expoConfig?.extra?.openaiApiKey
 };
 
 // Debug logging to see what we're getting
